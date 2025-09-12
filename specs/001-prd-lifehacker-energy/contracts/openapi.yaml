@@ -1,0 +1,732 @@
+openapi: 3.0.3
+info:
+  title: LifeHacker API - Energy-First Productivity
+  description: API for energy-adaptive productivity recommendations and user tracking
+  version: 1.0.0
+  contact:
+    name: LifeHacker Team
+    email: api@lifehacker.app
+
+servers:
+  - url: https://api.lifehacker.app/v1
+    description: Production server
+  - url: https://staging-api.lifehacker.app/v1
+    description: Staging server
+
+paths:
+  # Authentication Endpoints
+  /auth/register:
+    post:
+      summary: Register new user account
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: Email already exists
+
+  /auth/login:
+    post:
+      summary: Authenticate user login
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid credentials
+
+  /auth/refresh:
+    post:
+      summary: Refresh authentication token
+      tags: [Authentication]
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # Energy Level Tracking
+  /energy-levels:
+    post:
+      summary: Record daily energy level
+      tags: [Energy Tracking]
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEnergyLevelRequest'
+      responses:
+        '201':
+          description: Energy level recorded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnergyLevel'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    get:
+      summary: Get user's energy level history
+      tags: [Energy Tracking]
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: days
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 90
+            default: 30
+          description: Number of days to retrieve
+      responses:
+        '200':
+          description: Energy level history retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EnergyLevel'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+
+  /energy-levels/streaks:
+    get:
+      summary: Get energy level tracking streaks
+      tags: [Energy Tracking]
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Streak information retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnergyStreaks'
+
+  # Routine Recommendations
+  /recommendations/generate:
+    post:
+      summary: Generate AI-powered routine recommendations
+      tags: [Recommendations]
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateRecommendationRequest'
+      responses:
+        '200':
+          description: Recommendations generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoutineRecommendation'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /recommendations:
+    get:
+      summary: Get user's recommendation history
+      tags: [Recommendations]
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/RecommendationStatus'
+        - name: days
+          in: query
+          schema:
+            type: integer
+            default: 7
+      responses:
+        '200':
+          description: Recommendation history retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RoutineRecommendation'
+
+  /recommendations/{id}/status:
+    patch:
+      summary: Update recommendation status
+      tags: [Recommendations]
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRecommendationStatusRequest'
+      responses:
+        '200':
+          description: Status updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoutineRecommendation'
+
+  # Progress Visualization
+  /progress/path:
+    get:
+      summary: Get user's productivity path visualization
+      tags: [Progress]
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: days
+          in: query
+          schema:
+            type: integer
+            default: 30
+      responses:
+        '200':
+          description: Progress path data retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProgressPath'
+
+  /progress/insights:
+    get:
+      summary: Get user insights and analytics
+      tags: [Progress]
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [weekly, monthly]
+            default: weekly
+      responses:
+        '200':
+          description: Insights retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsightReport'
+
+  # External Integrations
+  /integrations/github:
+    post:
+      summary: Connect GitHub integration
+      tags: [Integrations]
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GitHubIntegrationRequest'
+      responses:
+        '200':
+          description: GitHub integration connected
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /integrations/calendar:
+    post:
+      summary: Connect Google Calendar integration
+      tags: [Integrations]
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CalendarIntegrationRequest'
+      responses:
+        '200':
+          description: Calendar integration connected
+
+  /integrations/sync:
+    post:
+      summary: Trigger manual sync of external data
+      tags: [Integrations]
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                providers:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ExternalProvider'
+      responses:
+        '200':
+          description: Sync initiated successfully
+
+  # User Management
+  /users/profile:
+    get:
+      summary: Get user profile information
+      tags: [Users]
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User profile retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+
+    put:
+      summary: Update user profile
+      tags: [Users]
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserProfileRequest'
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+
+  /users/subscribe:
+    post:
+      summary: Upgrade to premium subscription
+      tags: [Users]
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionRequest'
+      responses:
+        '200':
+          description: Subscription updated successfully
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    # Authentication Schemas
+    RegisterRequest:
+      type: object
+      required: [email, password, timezone]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+        timezone:
+          type: string
+          example: "America/New_York"
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    AuthResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        expires_in:
+          type: integer
+        user:
+          $ref: '#/components/schemas/UserProfile'
+
+    # Energy Level Schemas
+    CreateEnergyLevelRequest:
+      type: object
+      required: [level]
+      properties:
+        level:
+          type: integer
+          minimum: 1
+          maximum: 5
+        mood_context:
+          type: string
+          maxLength: 200
+
+    EnergyLevel:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        level:
+          type: integer
+          minimum: 1
+          maximum: 5
+        mood_context:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    EnergyStreaks:
+      type: object
+      properties:
+        current_streak:
+          type: integer
+        longest_streak:
+          type: integer
+        total_days_tracked:
+          type: integer
+        streak_milestones:
+          type: array
+          items:
+            type: object
+            properties:
+              days:
+                type: integer
+              achieved_at:
+                type: string
+                format: date-time
+
+    # Recommendation Schemas
+    GenerateRecommendationRequest:
+      type: object
+      required: [energy_level_id]
+      properties:
+        energy_level_id:
+          type: string
+          format: uuid
+        preferred_categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActivityCategory'
+
+    RoutineRecommendation:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        energy_level_id:
+          type: string
+          format: uuid
+        recommendation_type:
+          $ref: '#/components/schemas/RecommendationType'
+        title:
+          type: string
+        description:
+          type: string
+        estimated_duration_minutes:
+          type: integer
+        difficulty_modifier:
+          type: number
+          format: float
+        ai_reasoning:
+          type: string
+        status:
+          $ref: '#/components/schemas/RecommendationStatus'
+        activities:
+          type: array
+          items:
+            $ref: '#/components/schemas/Activity'
+        created_at:
+          type: string
+          format: date-time
+
+    Activity:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        category:
+          $ref: '#/components/schemas/ActivityCategory'
+        estimated_duration_minutes:
+          type: integer
+        is_completed:
+          type: boolean
+        completed_at:
+          type: string
+          format: date-time
+
+    UpdateRecommendationStatusRequest:
+      type: object
+      required: [status]
+      properties:
+        status:
+          $ref: '#/components/schemas/RecommendationStatus'
+        completion_rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+
+    # Progress Schemas
+    ProgressPath:
+      type: object
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        path_segments:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+                format: date
+              energy_consistency_score:
+                type: number
+                format: float
+              routine_completion_rate:
+                type: number
+                format: float
+              adaptation_wisdom_score:
+                type: number
+                format: float
+              milestones:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                    description:
+                      type: string
+
+    InsightReport:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        report_type:
+          type: string
+          enum: [weekly, monthly]
+        period_start:
+          type: string
+          format: date
+        period_end:
+          type: string
+          format: date
+        energy_pattern_analysis:
+          type: object
+        routine_effectiveness:
+          type: object
+        burnout_risk_factors:
+          type: object
+        growth_recommendations:
+          type: object
+
+    # Integration Schemas
+    GitHubIntegrationRequest:
+      type: object
+      required: [oauth_code]
+      properties:
+        oauth_code:
+          type: string
+
+    CalendarIntegrationRequest:
+      type: object
+      required: [oauth_code]
+      properties:
+        oauth_code:
+          type: string
+
+    # User Schemas
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        subscription_tier:
+          $ref: '#/components/schemas/SubscriptionTier'
+        onboarding_progress:
+          type: object
+        timezone:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
+    UpdateUserProfileRequest:
+      type: object
+      properties:
+        timezone:
+          type: string
+        notification_preferences:
+          type: object
+        privacy_settings:
+          type: object
+
+    SubscriptionRequest:
+      type: object
+      required: [tier, payment_method_id]
+      properties:
+        tier:
+          $ref: '#/components/schemas/SubscriptionTier'
+        payment_method_id:
+          type: string
+
+    # Enums
+    SubscriptionTier:
+      type: string
+      enum: [FREE, PRO, TEAM]
+
+    RecommendationType:
+      type: string
+      enum: [WORK, EXERCISE, REST, PERSONAL]
+
+    RecommendationStatus:
+      type: string
+      enum: [SUGGESTED, ACCEPTED, COMPLETED, SKIPPED]
+
+    ActivityCategory:
+      type: string
+      enum: [EXERCISE, MEDITATION, WORK_BLOCK, BREAK, LEARNING]
+
+    ExternalProvider:
+      type: string
+      enum: [GITHUB, LINEAR, NOTION, GOOGLE_CALENDAR, APPLE_HEALTH]
+
+    # Common Schemas
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+        has_next:
+          type: boolean
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+
+  responses:
+    BadRequest:
+      description: Bad request - validation errors
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Unauthorized:
+      description: Unauthorized - invalid or missing token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
