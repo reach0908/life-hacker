@@ -415,8 +415,15 @@ components:
         user:
           $ref: '#/components/schemas/UserProfile'
 
-    # Energy Level Schemas
+    # Energy Level Schemas (DDD Enhanced)
     CreateEnergyLevelRequest:
+      type: object
+      required: [energy_score]
+      properties:
+        energy_score:
+          $ref: '#/components/schemas/EnergyScoreInput'
+
+    EnergyScoreInput:
       type: object
       required: [level]
       properties:
@@ -424,9 +431,11 @@ components:
           type: integer
           minimum: 1
           maximum: 5
-        mood_context:
+          description: "Energy level from 1 (very tired 😴) to 5 (peak energy 🔥)"
+        context:
           type: string
           maxLength: 200
+          description: "Optional mood or situational context"
 
     EnergyLevel:
       type: object
@@ -435,17 +444,35 @@ components:
           type: string
           format: uuid
         user_id:
+          $ref: '#/components/schemas/UserId'
+        energy_score:
+          $ref: '#/components/schemas/EnergyScore'
+        session_date:
           type: string
-          format: uuid
+          format: date
+        created_at:
+          type: string
+          format: date-time
+
+    EnergyScore:
+      type: object
+      description: "Value Object - Energy assessment with business rules"
+      properties:
         level:
           type: integer
           minimum: 1
           maximum: 5
-        mood_context:
+        context:
           type: string
         timestamp:
           type: string
           format: date-time
+        is_low_energy:
+          type: boolean
+          readOnly: true
+        is_high_energy:
+          type: boolean
+          readOnly: true
 
     EnergyStreaks:
       type: object
@@ -482,29 +509,27 @@ components:
 
     RoutineRecommendation:
       type: object
+      description: "Entity - AI-generated routine with energy-based adaptations"
       properties:
         id:
+          $ref: '#/components/schemas/RecommendationId'
+        session_id:
           type: string
           format: uuid
-        user_id:
-          type: string
-          format: uuid
-        energy_level_id:
-          type: string
-          format: uuid
+          description: "Parent EnergySession ID"
         recommendation_type:
           $ref: '#/components/schemas/RecommendationType'
         title:
           type: string
         description:
           type: string
-        estimated_duration_minutes:
-          type: integer
+        estimated_duration:
+          $ref: '#/components/schemas/Duration'
         difficulty_modifier:
-          type: number
-          format: float
+          $ref: '#/components/schemas/DifficultyModifier'
         ai_reasoning:
           type: string
+          description: "AI explanation for why this was recommended"
         status:
           $ref: '#/components/schemas/RecommendationStatus'
         activities:
@@ -514,6 +539,62 @@ components:
         created_at:
           type: string
           format: date-time
+
+    Duration:
+      type: object
+      description: "Value Object - Time duration with business rules"
+      properties:
+        minutes:
+          type: integer
+          minimum: 1
+          maximum: 480
+        display_text:
+          type: string
+          readOnly: true
+          example: "30min"
+        hours:
+          type: number
+          readOnly: true
+          example: 0.5
+
+    DifficultyModifier:
+      type: object
+      description: "Value Object - Intensity adjustment factor"
+      properties:
+        value:
+          type: number
+          format: float
+          minimum: 0.1
+          maximum: 2.0
+        description:
+          type: string
+          readOnly: true
+          example: "Reduced intensity for low energy"
+
+    BurnoutRisk:
+      type: object
+      description: "Value Object - Risk assessment calculation"
+      properties:
+        score:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 1.0
+        alert_level:
+          type: string
+          enum: [LOW, MODERATE, HIGH, CRITICAL]
+          readOnly: true
+        factors:
+          type: array
+          items:
+            type: string
+          example: ["3 consecutive high-intensity days", "Declining energy trend"]
+        recommendation:
+          type: string
+          example: "Consider lighter routines and more recovery time"
+        requires_intervention:
+          type: boolean
+          readOnly: true
 
     Activity:
       type: object
@@ -678,6 +759,32 @@ components:
     ExternalProvider:
       type: string
       enum: [GITHUB, LINEAR, NOTION, GOOGLE_CALENDAR, APPLE_HEALTH]
+
+    # Domain Identifiers (Value Objects)
+    UserId:
+      type: string
+      format: uuid
+      description: "Strong-typed User identifier"
+      
+    EnergySessionId:
+      type: string
+      format: uuid
+      description: "Strong-typed Energy Session identifier"
+      
+    RecommendationId:
+      type: string
+      format: uuid
+      description: "Strong-typed Routine Recommendation identifier"
+      
+    ActivityId:
+      type: string
+      format: uuid
+      description: "Strong-typed Activity identifier"
+      
+    JourneyId:
+      type: string
+      format: uuid
+      description: "Strong-typed Productivity Journey identifier"
 
     # Common Schemas
     Pagination:

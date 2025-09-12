@@ -54,14 +54,39 @@ Energy-first productivity app for tech workers featuring AI-powered daily routin
 
 **Architecture**:
 - EVERY feature as library? Yes (NestJS domain modules + Flutter packages) ✓
-- Libraries listed: 
-  - energy-tracking (domain): Energy level input and streak tracking
-  - routine-ai (domain): AI recommendation engine with external data
-  - progress-visualization (domain): Productivity path and insights
-  - external-integrations (domain): GitHub, Calendar, Health sync
-  - user-management (domain): Authentication and subscription tiers
+- Libraries listed (DDD Bounded Contexts): 
+  - **energy-tracking** (domain): EnergySession aggregate, energy scoring, daily tracking
+  - **progress-visualization** (domain): ProductivityJourney aggregate, milestone tracking  
+  - **external-integrations** (domain): IntegrationHub aggregate, GitHub/Calendar/Health APIs
+  - **user-management** (domain): User aggregate, authentication, subscription management
+  - **shared-kernel** (domain): Common value objects (Duration, BurnoutRisk, EnergyScore)
 - CLI per library: API exposes CLI commands per domain ✓
 - Library docs: llms.txt format planned for each domain ✓
+
+**Ports & Adapters (Hexagonal Architecture)**:
+- **Inbound Ports (Use Cases)**:
+  - RecordEnergyLevelUseCase, GenerateRecommendationUseCase, CompleteActivityUseCase
+  - TrackProgressUseCase, DetectBurnoutUseCase, ManageSubscriptionUseCase
+- **Outbound Ports (Infrastructure Interfaces)**:
+  - EnergySessionRepository, ProductivityJourneyRepository, UserRepository
+  - AIRecommendationPort, GitHubIntegrationPort, CalendarIntegrationPort
+  - NotificationPort, PaymentPort, EmailServicePort
+- **Adapters (Infrastructure Implementation)**:
+  - PrismaEnergySessionRepositoryAdapter, OpenAIRecommendationAdapter
+  - GitHubWebhookAdapter, GoogleCalendarAdapter, FirebaseNotificationAdapter
+  - StripePaymentAdapter, SendGridEmailAdapter
+
+**Domain Services (Pure Business Logic)**:
+- AIRecommendationService: Energy-based routine adaptation
+- BurnoutDetectionService: Risk calculation and prevention
+- StreakCalculationService: Continuous tracking with self-compassion rules
+- IntensityAdaptationService: Calendar density and energy-based adjustments
+
+**Application Services (Use Case Orchestration)**:
+- EnergyTrackingApplicationService: Coordinates energy recording and recommendations
+- ProgressVisualizationApplicationService: Orchestrates journey tracking and insights
+- IntegrationManagementApplicationService: Manages external API connections
+- UserLifecycleApplicationService: Handles registration, subscription, settings
 
 **Testing (NON-NEGOTIABLE)**:
 - RED-GREEN-Refactor cycle enforced? Yes - tests written first ✓
