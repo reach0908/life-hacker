@@ -1,3 +1,7 @@
 [submodule "life-hacking-api"]
 	path = life-hacking-api
 	url = git@github.com:reach0908/life-hacking-api.git
+
+[submodule "life-hacking-mobile"]
+	path = life-hacking-mobile
+	url = git@github.com:reach0908/life-hacking-mobile.git
