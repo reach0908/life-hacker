@@ -23,7 +23,10 @@
       "Bash(mkdir:*)",
       "Bash(npx jest test:*)",
       "Bash(NODE_ENV=test npx jest test/contract/auth.contract.spec.ts --rootDir=.)",
-      "Bash(NODE_ENV=development npx jest test/contract/auth.contract.spec.ts --rootDir=.)"
+      "Bash(NODE_ENV=development npx jest test/contract/auth.contract.spec.ts --rootDir=.)",
+      "mcp__linear-server__get_issue",
+      "mcp__serena__find_symbol",
+      "mcp__serena__search_for_pattern"
     ],
     "deny": [],
     "ask": []
