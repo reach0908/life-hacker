@@ -14,7 +14,16 @@
       "Bash(npm run build:*)",
       "Bash(npm run test:*)",
       "Bash(npm install class-validator class-transformer)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "mcp__serena__activate_project",
+      "mcp__serena__get_symbols_overview",
+      "Read(//Users/jinhokim/dev/life-hacking-api/prisma/**)",
+      "Read(//Users/jinhokim/dev/life-hacking-api/**)",
+      "Bash(tree:*)",
+      "Bash(mkdir:*)",
+      "Bash(npx jest test:*)",
+      "Bash(NODE_ENV=test npx jest test/contract/auth.contract.spec.ts --rootDir=.)",
+      "Bash(NODE_ENV=development npx jest test/contract/auth.contract.spec.ts --rootDir=.)"
     ],
     "deny": [],
     "ask": []

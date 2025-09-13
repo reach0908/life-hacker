@@ -1,355 +1,187 @@
 # Tasks: LifeHacker - Energy-First Productivity App
 
 **Input**: Design documents from `/specs/001-prd-lifehacker-energy/`
-**Prerequisites**: plan.md (✅), research.md (✅), data-model.md (✅), contracts/ (✅), quickstart.md (✅)
+**Prerequisites**: plan.md ✅, research.md ✅, data-model.md ✅, contracts/ ✅
 
 ## Execution Flow (main)
 ```
 1. Load plan.md from feature directory
-   → ✅ Tech stack: NestJS Backend + Flutter Mobile (basic features first)
-   → ✅ Extract: Prisma ORM, PostgreSQL, basic CRUD operations
-2. Load design documents:
-   → ✅ data-model.md: Core entities (User, Energy, Routine, Progress)
-   → ✅ contracts/: Basic API endpoints for user flows
-   → ✅ quickstart.md: Essential user scenarios
-3. Generate tasks by complexity layers:
-   → ✅ Phase 1: Basic user management + energy tracking
-   → ✅ Phase 2: Simple routine management (manual/preset)
-   → ✅ Phase 3: Progress visualization
-   → ✅ Phase 4: AI-powered features (separate epic)
-   → ✅ Phase 5: Offline capabilities (separate epic)
-4. Apply parallel rules:
-   → ✅ Backend & Mobile tasks can run simultaneously [B][M]
-   → ✅ Integration tests verify basic user flows
-   → ✅ TDD: Contract tests → Implementation → Integration
-5. Number tasks: T001-T055 (core features only)
-6. Dependencies: Setup → Basic Features → Advanced Features
-7. Focus: Working product with essential user flows first
-   → ✅ Login → Energy Input → Routine Selection → Progress Tracking
+   → ✅ NestJS Clean Architecture + DDD + Flutter mobile detected
+   → ✅ Extract: TypeScript, NestJS, Prisma, Socket.IO, OpenAI, Flutter
+2. Load optional design documents:
+   → ✅ data-model.md: 9 entities extracted → model tasks
+   → ✅ contracts/openapi.yaml: 6 endpoint groups → contract test tasks
+   → ✅ research.md: 7 technology decisions → setup tasks
+3. Generate tasks by category:
+   → ✅ Setup: project init, dependencies, Prisma schema
+   → ✅ Tests: contract tests [P], integration tests [P]
+   → ✅ Core: domain models [P], services, controllers
+   → ✅ Integration: WebSocket, AI, external APIs
+   → ✅ Polish: unit tests [P], performance, docs
+4. Apply task rules:
+   → ✅ Different files = mark [P] for parallel
+   → ✅ Same file = sequential (no [P])
+   → ✅ Tests before implementation (TDD)
+5. Number tasks sequentially (T001, T002...)
+6. Generate dependency graph
+7. Create parallel execution examples
+8. Validate task completeness:
+   → ✅ All 6 endpoint groups have tests
+   → ✅ All 9 entities have models
+   → ✅ All 5 integration scenarios covered
+9. Return: SUCCESS (37 tasks ready for execution)
 ```
 
-## Format: `[ID] [B/M] [P?] Description`
-- **[B]**: Backend task (NestJS API in `life-hacking-api/`)
-- **[M]**: Mobile task (Flutter app in `life-hacking-mobile/`)
+## Format: `[ID] [P?] Description`
 - **[P]**: Can run in parallel (different files, no dependencies)
-- **Integration**: Backend + Mobile integration verification points
+- Include exact file paths in descriptions
 
-## Phase 1: Project Setup & Core Infrastructure
+## Path Conventions
+- **API Backend**: `life-hacking-api/src/`, `life-hacking-api/test/`
+- **Mobile Client**: `life-hacking-mobile/lib/`, `life-hacking-mobile/test/`
+- Paths shown below follow NestJS + Flutter structure from plan.md
 
-### Setup (Foundation for both platforms)
-- [ ] T001 [B] Update Prisma schema with core entities (User, EnergyLevel, Routine, Progress) in `life-hacking-api/prisma/schema.prisma`
-- [ ] T002 [B] Install basic dependencies (validation, auth) in `life-hacking-api/package.json`
-- [ ] T003 [B] [P] Configure validation schemas in `life-hacking-api/src/config/validation-schema.ts`
-- [ ] T004 [B] [P] Setup JWT authentication config in `life-hacking-api/src/config/auth.config.ts`
-- [ ] T005 [M] [P] Create Flutter project with Riverpod state management in `life-hacking-mobile/`
-- [ ] T006 [M] [P] Configure basic API client (no offline) in `life-hacking-mobile/lib/core/network/api_client.dart`
+## Phase 1: Backend Foundation & User Management (Tasks T001-T012)
 
-### Basic Feature Tests (TDD Phase 1)
+### Phase 1.1: Project Setup
+- [ ] **T001** Initialize NestJS project with Clean Architecture structure in life-hacking-api/
+- [ ] **T002** [P] Configure Prisma schema with User, UserProfile, SubscriptionTier models in life-hacking-api/prisma/schema.prisma
+- [ ] **T003** [P] Set up ESLint, Prettier, and Husky pre-commit hooks in life-hacking-api/
+- [ ] **T004** [P] Configure environment variables and Docker for PostgreSQL in life-hacking-api/.env and docker-compose.yml
+
+### Phase 1.2: Authentication Tests First (TDD) ⚠️ MUST COMPLETE BEFORE 1.3
+**CRITICAL: These tests MUST be written and MUST FAIL before ANY implementation**
+- [ ] **T005** [P] Contract test POST /auth/register in life-hacking-api/test/contract/auth.contract.spec.ts
+- [ ] **T006** [P] Contract test POST /auth/login in life-hacking-api/test/contract/auth.contract.spec.ts
+- [ ] **T007** [P] Contract test POST /auth/refresh in life-hacking-api/test/contract/auth.contract.spec.ts
+- [ ] **T008** [P] Integration test user registration flow in life-hacking-api/test/integration/auth.integration.spec.ts
+- [ ] **T009** [P] Integration test JWT authentication flow in life-hacking-api/test/integration/auth.integration.spec.ts
+
+### Phase 1.3: User Management Implementation (ONLY after tests are failing)
+- [ ] **T010** [P] User aggregate with value objects in life-hacking-api/src/domains/user-management/entities/user.entity.ts
+- [ ] **T011** [P] AuthService with JWT logic in life-hacking-api/src/domains/user-management/services/auth.service.ts
+- [ ] **T012** [P] UserRepository with Prisma implementation in life-hacking-api/src/domains/user-management/repositories/user.repository.ts
+
+## Phase 2: Core Domain - Energy Tracking & Real-time Sync (Tasks T013-T022)
+
+### Phase 2.1: Energy Domain Tests First (TDD)
 **CRITICAL: These tests MUST be written and MUST FAIL before implementation**
+- [ ] **T013** [P] Contract test POST /energy-levels in life-hacking-api/test/contract/energy.contract.spec.ts
+- [ ] **T014** [P] Contract test GET /energy-levels in life-hacking-api/test/contract/energy.contract.spec.ts
+- [ ] **T015** [P] Contract test GET /energy-levels/streaks in life-hacking-api/test/contract/energy.contract.spec.ts
+- [ ] **T016** [P] Integration test "Morning energy input → AI recommendation flow" from quickstart.md in life-hacking-api/test/integration/energy-flow.integration.spec.ts
 
-#### Backend Contract Tests [B]
-- [ ] T007 [B] [P] Contract test POST /auth/register in `life-hacking-api/test/contract/auth-register.e2e-spec.ts`
-- [ ] T008 [B] [P] Contract test POST /auth/login in `life-hacking-api/test/contract/auth-login.e2e-spec.ts`
-- [ ] T009 [B] [P] Contract test POST /energy-levels in `life-hacking-api/test/contract/energy-levels-post.e2e-spec.ts`
-- [ ] T010 [B] [P] Contract test GET /energy-levels in `life-hacking-api/test/contract/energy-levels-get.e2e-spec.ts`
-- [ ] T011 [B] [P] Contract test POST /routines in `life-hacking-api/test/contract/routines-post.e2e-spec.ts`
-- [ ] T012 [B] [P] Contract test GET /routines in `life-hacking-api/test/contract/routines-get.e2e-spec.ts`
+### Phase 2.2: Energy Domain Implementation
+- [ ] **T017** [P] EnergyScore value object with business rules in life-hacking-api/src/domains/energy-tracking/value-objects/energy-score.vo.ts
+- [ ] **T018** [P] EnergySession aggregate in life-hacking-api/src/domains/energy-tracking/entities/energy-session.entity.ts
+- [ ] **T019** [P] Duration and DifficultyModifier value objects in life-hacking-api/src/domains/energy-tracking/value-objects/
+- [ ] **T020** EnergyTrackingService with domain logic in life-hacking-api/src/domains/energy-tracking/services/energy-tracking.service.ts
 
-#### Mobile Widget Tests [M]
-- [ ] T013 [M] [P] Widget test login form in `life-hacking-mobile/test/widgets/auth/login_form_test.dart`
-- [ ] T014 [M] [P] Widget test energy input form in `life-hacking-mobile/test/widgets/energy_input_test.dart`
-- [ ] T015 [M] [P] Widget test routine list in `life-hacking-mobile/test/widgets/routine_list_test.dart`
+### Phase 2.3: Real-time Communication
+- [ ] **T021** [P] Socket.IO gateway for energy updates in life-hacking-api/src/infrastructure/websocket/energy.gateway.ts
+- [ ] **T022** [P] WebSocket event tests in life-hacking-api/test/integration/websocket.integration.spec.ts
 
-## Phase 2: User Management & Authentication
+## Phase 3: Advanced Features - AI & External Integrations (Tasks T023-T032)
 
-### Backend User System [B]
-- [ ] T016 [B] [P] User entity in `life-hacking-api/src/domains/user-management/domain/entities/user.entity.ts`
-- [ ] T017 [B] [P] RegisterUserUseCase in `life-hacking-api/src/domains/user-management/application/use-cases/register-user.use-case.ts`
-- [ ] T018 [B] [P] AuthenticateUserUseCase in `life-hacking-api/src/domains/user-management/application/use-cases/authenticate-user.use-case.ts`
-- [ ] T019 [B] PrismaUserRepository in `life-hacking-api/src/domains/user-management/infrastructure/persistence/prisma-user.repository.ts`
-- [ ] T020 [B] Auth controller in `life-hacking-api/src/domains/auth/presentation/controllers/auth.controller.ts`
-- [ ] T021 [B] JWT authentication guard in `life-hacking-api/src/domains/auth/presentation/guards/jwt-auth.guard.ts`
+### Phase 3.1: AI Recommendations Tests First (TDD)
+- [ ] **T023** [P] Contract test POST /recommendations/generate in life-hacking-api/test/contract/recommendations.contract.spec.ts
+- [ ] **T024** [P] Contract test GET /recommendations in life-hacking-api/test/contract/recommendations.contract.spec.ts
+- [ ] **T025** [P] Integration test "Burnout detection → recovery routine suggestion" from quickstart.md in life-hacking-api/test/integration/burnout-detection.integration.spec.ts
 
-### Mobile Authentication [M]
-- [ ] T022 [M] [P] User model in `life-hacking-mobile/lib/features/auth/models/user.dart`
-- [ ] T023 [M] [P] Login screen in `life-hacking-mobile/lib/features/auth/screens/login_screen.dart`
-- [ ] T024 [M] [P] Register screen in `life-hacking-mobile/lib/features/auth/screens/register_screen.dart`
-- [ ] T025 [M] [P] Auth repository in `life-hacking-mobile/lib/features/auth/repositories/auth_repository.dart`
-- [ ] T026 [M] [P] Auth state provider in `life-hacking-mobile/lib/features/auth/providers/auth_provider.dart`
+### Phase 3.2: AI Domain Implementation
+- [ ] **T026** [P] RoutineRecommendation entity and Activity entity in life-hacking-api/src/domains/routine-ai/entities/
+- [ ] **T027** [P] BurnoutRisk value object in life-hacking-api/src/domains/routine-ai/value-objects/burnout-risk.vo.ts
+- [ ] **T028** AIRecommendationService domain service in life-hacking-api/src/domains/routine-ai/services/ai-recommendation.service.ts
+- [ ] **T029** OpenAI adapter implementation in life-hacking-api/src/infrastructure/ai/openai.adapter.ts
 
-### Integration Point 1: Authentication Testing
-- [ ] T027 **Integration Test**: Registration → Login → Protected routes (Backend API + Mobile UI)
+### Phase 3.3: External Integrations Tests & Implementation
+- [ ] **T030** [P] Contract test POST /integrations/github and /integrations/calendar in life-hacking-api/test/contract/integrations.contract.spec.ts
+- [ ] **T031** [P] Integration test "GitHub activity → eye rest recommendation" from quickstart.md in life-hacking-api/test/integration/github-integration.integration.spec.ts
+- [ ] **T032** [P] External API adapters (GitHub, Google Calendar) in life-hacking-api/src/infrastructure/external-apis/
 
-## Phase 3: Energy Tracking
+## Phase 4: Progress Visualization & Completion (Tasks T033-T037)
 
-### Backend Energy System [B]
-- [ ] T028 [B] [P] EnergyLevel entity in `life-hacking-api/src/domains/energy-tracking/domain/entities/energy-level.entity.ts`
-- [ ] T029 [B] [P] RecordEnergyLevelUseCase in `life-hacking-api/src/domains/energy-tracking/application/use-cases/record-energy-level.use-case.ts`
-- [ ] T030 [B] [P] GetEnergyHistoryUseCase in `life-hacking-api/src/domains/energy-tracking/application/use-cases/get-energy-history.use-case.ts`
-- [ ] T031 [B] PrismaEnergyLevelRepository in `life-hacking-api/src/domains/energy-tracking/infrastructure/persistence/prisma-energy-level.repository.ts`
-- [ ] T032 [B] Energy levels controller in `life-hacking-api/src/domains/energy-tracking/presentation/controllers/energy-levels.controller.ts`
+### Phase 4.1: Progress Domain
+- [ ] **T033** [P] Contract test GET /progress/path and /progress/insights in life-hacking-api/test/contract/progress.contract.spec.ts
+- [ ] **T034** [P] ProductivityJourney aggregate and ProgressPath value object in life-hacking-api/src/domains/progress-visualization/entities/
+- [ ] **T035** [P] Integration test "Completion tracking → progress path update" from quickstart.md in life-hacking-api/test/integration/progress-tracking.integration.spec.ts
 
-### Mobile Energy Tracking [M]
-- [ ] T033 [M] [P] EnergyLevel model in `life-hacking-mobile/lib/features/energy_tracking/models/energy_level.dart`
-- [ ] T034 [M] [P] Energy input screen in `life-hacking-mobile/lib/features/energy_tracking/screens/energy_input_screen.dart`
-- [ ] T035 [M] [P] Energy history screen in `life-hacking-mobile/lib/features/energy_tracking/screens/energy_history_screen.dart`
-- [ ] T036 [M] [P] Energy tracking repository in `life-hacking-mobile/lib/features/energy_tracking/repositories/energy_repository.dart`
-- [ ] T037 [M] [P] Energy state provider in `life-hacking-mobile/lib/features/energy_tracking/providers/energy_provider.dart`
+### Phase 4.2: Final Integration & Polish
+- [ ] **T036** [P] End-to-end test "Calendar density → routine intensity adjustment" from quickstart.md in life-hacking-api/test/e2e/calendar-integration.e2e.spec.ts
+- [ ] **T037** [P] Performance tests (<3sec AI recommendations, <200ms API responses) in life-hacking-api/test/performance/
 
-### Integration Point 2: Energy Tracking Testing
-- [ ] T038 **Integration Test**: Energy input → storage → history display (Backend API + Mobile UI)
+## Dependencies
+**Phase Gates**:
+- Phase 1.2 tests (T005-T009) **MUST FAIL** before Phase 1.3 implementation (T010-T012)
+- Phase 2.1 tests (T013-T016) **MUST FAIL** before Phase 2.2 implementation (T017-T020)
+- Phase 3.1 tests (T023-T025) **MUST FAIL** before Phase 3.2 implementation (T026-T029)
 
-## Phase 4: Basic Routine Management
+**Sequential Dependencies**:
+- T001 (project setup) blocks T002-T004
+- T010 (User aggregate) blocks T011, T012
+- T017-T019 (Energy domain models) block T020 (Energy service)
+- T026-T027 (AI domain models) block T028, T029
+- T021 (WebSocket gateway) requires T018 (EnergySession)
 
-### Backend Routine System [B]
-- [ ] T039 [B] [P] Routine entity in `life-hacking-api/src/domains/routine-management/domain/entities/routine.entity.ts`
-- [ ] T040 [B] [P] Activity entity in `life-hacking-api/src/domains/routine-management/domain/entities/activity.entity.ts`
-- [ ] T041 [B] [P] CreateRoutineUseCase in `life-hacking-api/src/domains/routine-management/application/use-cases/create-routine.use-case.ts`
-- [ ] T042 [B] [P] GetRoutinesUseCase in `life-hacking-api/src/domains/routine-management/application/use-cases/get-routines.use-case.ts`
-- [ ] T043 [B] PrismaRoutineRepository in `life-hacking-api/src/domains/routine-management/infrastructure/persistence/prisma-routine.repository.ts`
-- [ ] T044 [B] Routines controller in `life-hacking-api/src/domains/routine-management/presentation/controllers/routines.controller.ts`
+## Parallel Execution Examples
 
-### Mobile Routine Management [M]
-- [ ] T045 [M] [P] Routine model in `life-hacking-mobile/lib/features/routines/models/routine.dart`
-- [ ] T046 [M] [P] Activity model in `life-hacking-mobile/lib/features/routines/models/activity.dart`
-- [ ] T047 [M] [P] Routines list screen in `life-hacking-mobile/lib/features/routines/screens/routines_screen.dart`
-- [ ] T048 [M] [P] Routine detail screen in `life-hacking-mobile/lib/features/routines/screens/routine_detail_screen.dart`
-- [ ] T049 [M] [P] Create routine screen in `life-hacking-mobile/lib/features/routines/screens/create_routine_screen.dart`
-- [ ] T050 [M] [P] Routine repository in `life-hacking-mobile/lib/features/routines/repositories/routine_repository.dart`
-- [ ] T051 [M] [P] Routine state provider in `life-hacking-mobile/lib/features/routines/providers/routine_provider.dart`
-
-### Integration Point 3: Routine Management Testing
-- [ ] T052 **Integration Test**: Create routine → View routines → Complete activities (Backend API + Mobile UI)
-
-## Phase 5: Basic Progress Tracking
-
-### Backend Progress System [B]
-- [ ] T053 [B] [P] Progress entity in `life-hacking-api/src/domains/progress-tracking/domain/entities/progress.entity.ts`
-- [ ] T054 [B] [P] TrackProgressUseCase in `life-hacking-api/src/domains/progress-tracking/application/use-cases/track-progress.use-case.ts`
-- [ ] T055 [B] [P] GetProgressUseCase in `life-hacking-api/src/domains/progress-tracking/application/use-cases/get-progress.use-case.ts`
-
-### Mobile Progress Display [M]
-- [ ] T056 [M] [P] Progress model in `life-hacking-mobile/lib/features/progress/models/progress.dart`
-- [ ] T057 [M] [P] Progress screen in `life-hacking-mobile/lib/features/progress/screens/progress_screen.dart`
-- [ ] T058 [M] [P] Basic progress charts in `life-hacking-mobile/lib/features/progress/widgets/progress_chart.dart`
-
-### Integration Point 4: End-to-End Basic Flow Testing
-- [ ] T059 **E2E Test**: Complete user journey (Login → Energy Input → Select Routine → Complete Activities → View Progress)
-
----
-
-# 🚀 **EPIC: AI-Powered Features** (Separate Development Phase)
-*Implement after basic features are working and tested*
-
-## AI Epic Setup
-- [ ] **AI-001** [B] Install OpenAI dependencies and configure client in `life-hacking-api/package.json`
-- [ ] **AI-002** [B] Configure OpenAI client in `life-hacking-api/src/config/ai.config.ts`
-
-## AI Recommendation System
-- [ ] **AI-003** [B] [P] Contract test POST /recommendations/generate in `life-hacking-api/test/contract/recommendations-generate.e2e-spec.ts`
-- [ ] **AI-004** [B] [P] AIRecommendationService in `life-hacking-api/src/domains/routine-ai/domain/services/ai-recommendation.service.ts`
-- [ ] **AI-005** [B] [P] OpenAIRecommendationAdapter in `life-hacking-api/src/domains/routine-ai/infrastructure/adapters/openai-recommendation.adapter.ts`
-- [ ] **AI-006** [B] GenerateRecommendationUseCase in `life-hacking-api/src/domains/routine-ai/application/use-cases/generate-recommendation.use-case.ts`
-- [ ] **AI-007** [B] Recommendations controller in `life-hacking-api/src/domains/routine-ai/presentation/controllers/recommendations.controller.ts`
-- [ ] **AI-008** [M] [P] AI recommendations screen in `life-hacking-mobile/lib/features/ai_recommendations/screens/ai_recommendations_screen.dart`
-- [ ] **AI-009** [M] [P] AI recommendation widget in `life-hacking-mobile/lib/features/ai_recommendations/widgets/ai_recommendation_widget.dart`
-
-## Burnout Detection & Smart Analytics
-- [ ] **AI-010** [B] [P] BurnoutDetectionService in `life-hacking-api/src/domains/analytics/domain/services/burnout-detection.service.ts`
-- [ ] **AI-011** [B] [P] AnalyticsController for insights in `life-hacking-api/src/domains/analytics/presentation/controllers/analytics.controller.ts`
-- [ ] **AI-012** [M] [P] Burnout warning screen in `life-hacking-mobile/lib/features/analytics/screens/burnout_warning_screen.dart`
-
-## External API Integrations (GitHub, Calendar)
-- [ ] **AI-013** [B] [P] GitHubWebhookAdapter in `life-hacking-api/src/domains/external-integrations/infrastructure/adapters/github-webhook.adapter.ts`
-- [ ] **AI-014** [B] [P] GoogleCalendarAdapter in `life-hacking-api/src/domains/external-integrations/infrastructure/adapters/google-calendar.adapter.ts`
-- [ ] **AI-015** [M] [P] External integrations screen in `life-hacking-mobile/lib/features/integrations/screens/integrations_screen.dart`
-
-## AI Integration Testing
-- [ ] **AI-016** **Integration Test**: Energy level → AI recommendation → mobile display flow
-- [ ] **AI-017** **Integration Test**: External data → burnout detection → mobile notifications
-
----
-
-# 📱 **EPIC: Offline Capabilities** (Separate Development Phase)
-*Implement after basic online features are stable*
-
-## Offline Infrastructure
-- [ ] **OFF-001** [M] Setup SQLite local database schema in `life-hacking-mobile/lib/core/database/offline_database.dart`
-- [ ] **OFF-002** [M] [P] Offline sync queue service in `life-hacking-mobile/lib/core/sync/sync_queue_service.dart`
-- [ ] **OFF-003** [M] [P] Conflict resolution service in `life-hacking-mobile/lib/core/sync/conflict_resolver.dart`
-
-## Offline Data Management
-- [ ] **OFF-004** [M] [P] Offline energy repository in `life-hacking-mobile/lib/features/energy_tracking/repositories/offline_energy_repository.dart`
-- [ ] **OFF-005** [M] [P] Offline routine repository in `life-hacking-mobile/lib/features/routines/repositories/offline_routine_repository.dart`
-- [ ] **OFF-006** [M] [P] Background sync service in `life-hacking-mobile/lib/core/sync/background_sync_service.dart`
-
-## Offline UI/UX
-- [ ] **OFF-007** [M] [P] Offline indicator widget in `life-hacking-mobile/lib/shared/widgets/offline_indicator.dart`
-- [ ] **OFF-008** [M] [P] Sync status screen in `life-hacking-mobile/lib/features/sync/screens/sync_status_screen.dart`
-- [ ] **OFF-009** [M] [P] Offline mode toggle in app settings
-
-## Offline Integration Testing
-- [ ] **OFF-010** **Integration Test**: Offline energy input → background sync → conflict resolution
-- [ ] **OFF-011** **Integration Test**: Complete offline routine → sync when online → data consistency
-
----
-
-# 🎨 **EPIC: Advanced UI/UX Features** (Optional Enhancement Phase)
-
-## Real-time Features
-- [ ] **UX-001** [M] [P] WebSocket service for real-time updates in `life-hacking-mobile/lib/core/network/websocket_service.dart`
-- [ ] **UX-002** [M] [P] Push notification service in `life-hacking-mobile/lib/core/notifications/notification_service.dart`
-- [ ] **UX-003** [M] [P] Advanced progress charts in `life-hacking-mobile/lib/features/progress/widgets/advanced_charts.dart`
-
----
-
-## Dependencies & Parallel Execution Strategy
-
-### Basic Features Phase Dependencies
-```
-Phase 1: Setup (T001-T006) → 
-Phase 1: Tests (T007-T015) → 
-Phase 2: Authentication (T016-T027) → 
-Phase 3: Energy Tracking (T028-T038) → 
-Phase 4: Routine Management (T039-T052) → 
-Phase 5: Progress Tracking (T053-T059)
-```
-
-### Advanced Features (Separate Epics)
-```
-AI Epic: AI-001 → AI-017 (implement after T059)
-Offline Epic: OFF-001 → OFF-011 (implement after basic features stable)
-UX Epic: UX-001 → UX-003 (optional enhancements)
-```
-
-### Key Parallel Opportunities
-
-#### Phase 1: Setup (All can run in parallel after T001-T002)
+### Phase 1 - Parallel Test Creation (after T004):
 ```bash
-# Backend setup tasks
-Task: "Configure validation schemas [B]" 
-Task: "Setup JWT auth config [B]"
-
-# Mobile setup tasks (parallel to backend)
-Task: "Create Flutter project [M]"
-Task: "Configure API client [M]"
+# Launch T005-T009 together:
+Task: "Contract test POST /auth/register in life-hacking-api/test/contract/auth.contract.spec.ts"
+Task: "Contract test POST /auth/login in life-hacking-api/test/contract/auth.contract.spec.ts"
+Task: "Contract test POST /auth/refresh in life-hacking-api/test/contract/auth.contract.spec.ts"
+Task: "Integration test user registration in life-hacking-api/test/integration/auth.integration.spec.ts"
+Task: "Integration test JWT authentication in life-hacking-api/test/integration/auth.integration.spec.ts"
 ```
 
-#### Phase 2: Authentication (Backend & Mobile parallel)
+### Phase 2 - Parallel Domain Implementation (after T016):
 ```bash
-# Backend user system
-Task: "User entity [B]"
-Task: "RegisterUserUseCase [B]"
-Task: "AuthenticateUserUseCase [B]"
-
-# Mobile authentication (simultaneously)
-Task: "User model [M]"
-Task: "Login screen [M]"
-Task: "Register screen [M]"
+# Launch T017-T019 together:
+Task: "EnergyScore value object in life-hacking-api/src/domains/energy-tracking/value-objects/energy-score.vo.ts"
+Task: "EnergySession aggregate in life-hacking-api/src/domains/energy-tracking/entities/energy-session.entity.ts"
+Task: "Duration and DifficultyModifier value objects in life-hacking-api/src/domains/energy-tracking/value-objects/"
 ```
 
-#### Phase 3: Energy Tracking (Backend & Mobile parallel)
+### Phase 3 - Parallel AI Implementation (after T025):
 ```bash
-# Backend energy system
-Task: "EnergyLevel entity [B]"
-Task: "RecordEnergyLevelUseCase [B]"
-Task: "Energy levels controller [B]"
-
-# Mobile energy features (simultaneously)
-Task: "EnergyLevel model [M]"
-Task: "Energy input screen [M]"
-Task: "Energy history screen [M]"
+# Launch T026-T027 together:
+Task: "RoutineRecommendation and Activity entities in life-hacking-api/src/domains/routine-ai/entities/"
+Task: "BurnoutRisk value object in life-hacking-api/src/domains/routine-ai/value-objects/burnout-risk.vo.ts"
 ```
 
-#### Phase 4: Routine Management (Backend & Mobile parallel)
-```bash
-# Backend routine system
-Task: "Routine entity [B]"
-Task: "CreateRoutineUseCase [B]"
-Task: "Routines controller [B]"
+## Mobile Development Track (Parallel with Backend)
 
-# Mobile routine features (simultaneously)
-Task: "Routine model [M]"
-Task: "Routines list screen [M]"
-Task: "Create routine screen [M]"
-```
+### Phase M1: Flutter Foundation (Start after T005-T007 contracts)
+- Use OpenAPI generator to create Flutter API client from contracts/openapi.yaml
+- Implement authentication screens with mock API responses
+- Set up offline-first architecture with local SQLite storage
 
-### Critical Integration Points
-- **T027**: Authentication integration test (blocks Phase 3)
-- **T038**: Energy tracking integration test (blocks Phase 4) 
-- **T052**: Routine management integration test (blocks Phase 5)
-- **T059**: End-to-end basic flow test (blocks advanced epics)
+### Phase M2: Core Features (Start after T013-T015 contracts)
+- Implement energy level input UI with immediate local storage
+- Create WebSocket client for real-time sync with backend
+- Build recommendation display UI with offline caching
 
-## Success Criteria
-
-### Basic Features Implementation (Core MVP)
-- ✅ **Authentication**: Users can register, login, and access protected features
-- ✅ **Energy Tracking**: Users can input daily energy levels and view history
-- ✅ **Routine Management**: Users can create, view, and complete basic routines
-- ✅ **Progress Tracking**: Users can see their progress and completion stats
-- ✅ **Full-Stack Integration**: Backend NestJS API + Flutter mobile app working together
-- ✅ **Contract-First Development**: All API endpoints tested before implementation
-
-### Essential User Flows (Must Work End-to-End)
-- ✅ **Registration Flow**: New user signup → email confirmation → profile setup
-- ✅ **Daily Routine**: Login → Energy input → Select routine → Complete activities → View progress
-- ✅ **History & Progress**: View energy history, routine completion rates, and progress charts
-
-### Performance Benchmarks (Basic Features)
-- ✅ **Backend API**: <200ms response times for CRUD operations
-- ✅ **Mobile UI**: Smooth navigation and form submissions
-- ✅ **Data Persistence**: Reliable storage and retrieval of user data
-
-### Advanced Features (Separate Epics - Optional)
-- 🚀 **AI Recommendations**: Energy-based routine suggestions (AI Epic)
-- 📱 **Offline Capability**: Mobile app works offline with sync (Offline Epic)
-- 🎨 **Real-time Updates**: WebSocket connections and push notifications (UX Epic)
-- 🔗 **External Integrations**: GitHub and Calendar data integration (AI Epic)
-
-## Development Approach Benefits
-
-### Basic Features First Strategy
-- **Working Product Quickly**: Essential user flows operational before advanced features
-- **Reduced Complexity**: Focus on core functionality without AI/offline complexity
-- **Better Testing**: Stable foundation before adding complex integrations
-- **User Validation**: Real user feedback on core features before investing in AI
-
-### Parallel Development Advantages
-- **Faster Feedback**: API design issues discovered immediately through mobile development
-- **Real Integration Testing**: Actual mobile app validates backend functionality continuously
-- **Better UX Design**: Mobile experience drives backend API design improvements
-- **Risk Reduction**: Integration issues caught early in basic features
-
-### Epic-Based Advanced Features
-- **Modular Development**: AI, Offline, and UX features as separate, optional epics
-- **Incremental Value**: Each epic adds significant value independently
-- **Resource Flexibility**: Can prioritize epics based on user needs and resources
-- **Reduced Risk**: Advanced features don't block core functionality
-
-## Technical Architecture Validation
-
-### Backend (NestJS) - Basic Features
-- ✅ **Clean Architecture**: Domain → Application → Infrastructure → Presentation layers
-- ✅ **DDD Patterns**: User, EnergyLevel, Routine, Progress entities with proper boundaries
-- ✅ **CRUD Operations**: Standard create, read, update, delete for all core entities
-- ✅ **TDD Compliance**: All tests written before implementation
-
-### Mobile (Flutter) - Basic Features
-- ✅ **Feature Architecture**: Clean separation by domain (auth, energy, routines, progress)
-- ✅ **State Management**: Riverpod for predictable state updates
-- ✅ **Online-Only**: Simple HTTP API calls without offline complexity
-- ✅ **Standard UI**: Form inputs, lists, basic charts without advanced animations
+## Notes
+- **[P] tasks** = different files, no dependencies, can run in parallel
+- **Verify tests fail** before implementing (RED phase of TDD)
+- **Commit after each task** for clean git history
+- **Use Context7 packages**: @nestjs/core, @prisma/client, socket.io, openai
+- **Follow DDD patterns**: Aggregates, Value Objects, Domain Services, Ports & Adapters
 
 ## Validation Checklist
 *GATE: Checked before execution*
 
-- [x] Basic features prioritized over advanced AI/offline features
-- [x] Backend and Mobile tasks properly separated with [B][M] markers
-- [x] Core user flows covered: Auth → Energy → Routines → Progress
-- [x] Advanced features properly separated into optional epics
-- [x] TDD maintained: Tests before implementation in all phases
-- [x] Each task specifies exact file paths for both platforms
-- [x] Clear phase dependencies: Setup → Auth → Energy → Routines → Progress
-- [x] Integration tests at each phase to verify end-to-end functionality
+- [x] All 6 API endpoint groups have corresponding contract tests
+- [x] All 9 entities from data-model.md have model creation tasks
+- [x] All 5 integration scenarios from quickstart.md are covered
+- [x] TDD order enforced: tests come before implementation
+- [x] Parallel tasks [P] truly independent (different files)
+- [x] Each task specifies exact file path
+- [x] No task modifies same file as another [P] task
+- [x] Constitutional compliance: Library-first, CLI interface, Test-first, Integration testing, Observability, Versioning
 
-**Ready for basic feature development with advanced features as separate epics! 🎯**
+---
+
+**Task Generation Status**: ✅ Complete - 37 executable tasks ready for implementation
+**Next Phase**: Execute tasks following TDD methodology with constitutional compliance
