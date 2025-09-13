@@ -1,27 +1,26 @@
-# Implementation Plan: LifeHacker - Energy-First Productivity App
+# Implementation Plan: LifeHacker Energy-First Productivity App
 
-**Branch**: `001-prd-lifehacker-energy` | **Date**: 2025-09-12 | **Spec**: [spec.md](./spec.md)
+**Branch**: `001-prd-lifehacker-energy` | **Date**: 2025-09-13 | **Spec**: [spec.md](./spec.md)
 **Input**: Feature specification from `/specs/001-prd-lifehacker-energy/spec.md`
 
 ## Execution Flow (/plan command scope)
 ```
 1. Load feature spec from Input path
-   → ✅ Feature spec loaded successfully
+   → If not found: ERROR "No feature spec at {path}"
 2. Fill Technical Context (scan for NEEDS CLARIFICATION)
-   → ✅ Mobile + API architecture detected
-   → ✅ NestJS backend + Flutter mobile determined from user context
+   → Detect Project Type from context (web=frontend+backend, mobile=app+api)
+   → Set Structure Decision based on project type
 3. Evaluate Constitution Check section below
-   → ✅ 2 projects (within max 3), following established patterns
-   → ✅ Update Progress Tracking: Initial Constitution Check
+   → If violations exist: Document in Complexity Tracking
+   → If no justification possible: ERROR "Simplify approach first"
+   → Update Progress Tracking: Initial Constitution Check
 4. Execute Phase 0 → research.md
-   → ✅ Technology research completed
-5. Execute Phase 1 → contracts, data-model.md, quickstart.md, CLAUDE.md
-   → ✅ Design artifacts generated
+   → If NEEDS CLARIFICATION remain: ERROR "Resolve unknowns"
+5. Execute Phase 1 → contracts, data-model.md, quickstart.md, agent-specific template file (e.g., `CLAUDE.md` for Claude Code, `.github/copilot-instructions.md` for GitHub Copilot, or `GEMINI.md` for Gemini CLI).
 6. Re-evaluate Constitution Check section
-   → ✅ No new violations, design follows constitutional principles
-   → ✅ Update Progress Tracking: Post-Design Constitution Check
+   → If new violations: Refactor design, return to Phase 1
+   → Update Progress Tracking: Post-Design Constitution Check
 7. Plan Phase 2 → Describe task generation approach (DO NOT create tasks.md)
-   → ✅ Task planning approach documented
 8. STOP - Ready for /tasks command
 ```
 
@@ -30,87 +29,57 @@
 - Phase 3-4: Implementation execution (manual or via tools)
 
 ## Summary
-Energy-first productivity app for tech workers featuring AI-powered daily routine recommendations that adapt to user energy levels and external data from productivity tools. Backend uses NestJS with Clean Architecture/DDD, mobile client built with Flutter. Core innovation: treating rest and recovery as intentional growth rather than reduced performance.
+Energy-first productivity app for tech workers that combines daily energy level input, AI-powered routine recommendations, and adaptive difficulty scaling to prevent burnout while maintaining high productivity. Backend uses NestJS with Clean Architecture (already partially implemented), frontend will be Flutter iOS app with shadcn_flutter design system and Riverpod state management.
 
 ## Technical Context
-**Language/Version**: TypeScript (NestJS backend), Dart (Flutter 3.x mobile)  
-**Primary Dependencies**: NestJS, Prisma, PostgreSQL, OpenAI API, Riverpod, WebSocket  
-**Storage**: PostgreSQL (backend), SQLite (mobile local cache)  
-**Testing**: Jest (backend), Flutter Test (mobile)  
-**Target Platform**: iOS 15+, Android API 21+ with NestJS backend  
-**Project Type**: mobile - Flutter app with NestJS API backend  
-**Performance Goals**: <3sec AI recommendations, <200ms API responses, 60fps UI  
-**Constraints**: Offline-capable, real-time sync, privacy-compliant data handling  
-**Scale/Scope**: 100K MAU target, 15 functional requirements, 9 core entities
+**Language/Version**: Backend: TypeScript/NestJS (existing), Frontend: Dart/Flutter 3.x (new setup)
+**Primary Dependencies**: Backend: NestJS, Prisma ORM, PostgreSQL (existing), Frontend: flutter_riverpod, shadcn_flutter, dio (HTTP client)
+**Storage**: PostgreSQL with Prisma ORM (backend), local storage/secure storage (mobile)
+**Testing**: Backend: Jest (existing), Frontend: Flutter Test (unit), Widget Test, Integration Test
+**Target Platform**: iOS 15+ (primary), NestJS API server (existing)
+**Project Type**: mobile - Mobile + API (Option 3 from structure)
+**Performance Goals**: <100ms app response time, 60fps UI, <50MB memory usage on mobile
+**Constraints**: Offline-capable basic recommendations, real-time sync when online, battery-efficient
+**Scale/Scope**: 10k initial users, ~15 core screens, 5 main feature domains (energy, routines, progress, integrations, user)
 
 ## Constitution Check
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
 **Simplicity**:
-- Projects: 2 (mobile app + API) - within max of 3 ✓
-- Using framework directly? Yes (NestJS, Flutter directly) ✓
-- Single data model? Yes (shared Prisma schema + Flutter models) ✓
-- Avoiding patterns? Following established NestJS Clean Architecture ✓
+- Projects: 2 (life-hacking-api NestJS backend existing, life-hacking-mobile Flutter app new)
+- Using framework directly? Yes - Riverpod providers, shadcn_flutter components, Dio HTTP client
+- Single data model? No - DTOs needed for API serialization, Entities for business logic
+- Avoiding patterns? Repository pattern justified for API abstraction and offline capability
 
 **Architecture**:
-- EVERY feature as library? Yes (NestJS domain modules + Flutter packages) ✓
-- Libraries listed (DDD Bounded Contexts): 
-  - **energy-tracking** (domain): EnergySession aggregate, energy scoring, daily tracking
-  - **progress-visualization** (domain): ProductivityJourney aggregate, milestone tracking  
-  - **external-integrations** (domain): IntegrationHub aggregate, GitHub/Calendar/Health APIs
-  - **user-management** (domain): User aggregate, authentication, subscription management
-  - **shared-kernel** (domain): Common value objects (Duration, BurnoutRisk, EnergyScore)
-- CLI per library: API exposes CLI commands per domain ✓
-- Library docs: llms.txt format planned for each domain ✓
-
-**Ports & Adapters (Hexagonal Architecture)**:
-- **Inbound Ports (Use Cases)**:
-  - RecordEnergyLevelUseCase, GenerateRecommendationUseCase, CompleteActivityUseCase
-  - TrackProgressUseCase, DetectBurnoutUseCase, ManageSubscriptionUseCase
-- **Outbound Ports (Infrastructure Interfaces)**:
-  - EnergySessionRepository, ProductivityJourneyRepository, UserRepository
-  - AIRecommendationPort, GitHubIntegrationPort, CalendarIntegrationPort
-  - NotificationPort, PaymentPort, EmailServicePort
-- **Adapters (Infrastructure Implementation)**:
-  - PrismaEnergySessionRepositoryAdapter, OpenAIRecommendationAdapter
-  - GitHubWebhookAdapter, GoogleCalendarAdapter, FirebaseNotificationAdapter
-  - StripePaymentAdapter, SendGridEmailAdapter
-
-**Domain Services (Pure Business Logic)**:
-- AIRecommendationService: Energy-based routine adaptation
-- BurnoutDetectionService: Risk calculation and prevention
-- StreakCalculationService: Continuous tracking with self-compassion rules
-- IntensityAdaptationService: Calendar density and energy-based adjustments
-
-**Application Services (Use Case Orchestration)**:
-- EnergyTrackingApplicationService: Coordinates energy recording and recommendations
-- ProgressVisualizationApplicationService: Orchestrates journey tracking and insights
-- IntegrationManagementApplicationService: Manages external API connections
-- UserLifecycleApplicationService: Handles registration, subscription, settings
+- EVERY feature as library? Mobile: Features as self-contained modules with clear boundaries
+- Libraries listed: energy-tracking (input/streaks), routine-ai (recommendations), progress-visualization (journey), external-integrations (API sync), user-management (auth/profile)
+- CLI per library: Not applicable for mobile app, backend has existing CLI structure
+- Library docs: Dart documentation with example usage per feature module
 
 **Testing (NON-NEGOTIABLE)**:
-- RED-GREEN-Refactor cycle enforced? Yes - tests written first ✓
-- Git commits show tests before implementation? Yes - strict TDD ✓
-- Order: Contract→Integration→E2E→Unit strictly followed? Yes ✓
-- Real dependencies used? Yes (actual PostgreSQL, external APIs) ✓
-- Integration tests for: new libraries, contract changes, shared schemas? Yes ✓
-- FORBIDDEN: Implementation before test, skipping RED phase ✓
+- RED-GREEN-Refactor cycle enforced? Yes - Flutter tests written first for UseCase logic
+- Git commits show tests before implementation? Yes - test files committed before implementation
+- Order: Contract→Integration→E2E→Unit strictly followed? Yes - API contracts, user workflows, component widgets, business logic
+- Real dependencies used? Yes - actual HTTP calls, real SQLite database for integration tests
+- Integration tests for: Flutter-backend API integration, WebSocket real-time updates, offline sync
+- FORBIDDEN: Implementation before test, skipping RED phase
 
 **Observability**:
-- Structured logging included? Yes (NestJS logger + Flutter logging) ✓
-- Frontend logs → backend? Yes (unified error stream) ✓
-- Error context sufficient? Yes (user context + technical details) ✓
+- Structured logging included? Yes - Flutter logging to backend via API
+- Frontend logs → backend? Yes - unified error stream for debugging
+- Error context sufficient? Yes - user context, device info, error stack traces
 
 **Versioning**:
-- Version number assigned? v1.0.0 (MAJOR.MINOR.BUILD) ✓
-- BUILD increments on every change? Yes ✓
-- Breaking changes handled? Yes (parallel tests, migration plan) ✓
+- Version number assigned? Mobile: 1.0.1 (MAJOR.MINOR.BUILD), API: existing versioning
+- BUILD increments on every change? Yes - automated via CI/CD
+- Breaking changes handled? Yes - API versioning, mobile app migration handling
 
 ## Project Structure
 
 ### Documentation (this feature)
 ```
-specs/001-prd-lifehacker-energy/
+specs/[###-feature]/
 ├── plan.md              # This file (/plan command output)
 ├── research.md          # Phase 0 output (/plan command)
 ├── data-model.md        # Phase 1 output (/plan command)
@@ -121,55 +90,55 @@ specs/001-prd-lifehacker-energy/
 
 ### Source Code (repository root)
 ```
-# Option 3: Mobile + API (detected from Flutter + NestJS context)
-life-hacking-api/
-├── src/
-│   ├── domains/
-│   │   ├── energy-tracking/
-│   │   ├── routine-ai/
-│   │   ├── progress-visualization/
-│   │   ├── external-integrations/
-│   │   └── user-management/
-│   ├── config/
-│   └── database/
-└── tests/
-    ├── contract/
-    ├── integration/
-    └── unit/
+# Option 1: Single project (DEFAULT)
+src/
+├── models/
+├── services/
+├── cli/
+└── lib/
 
-life-hacking-mobile/
-├── lib/
-│   ├── features/
-│   │   ├── energy_tracking/
-│   │   ├── routine_recommendations/
-│   │   ├── progress_visualization/
-│   │   ├── external_integrations/
-│   │   └── user_management/
-│   ├── shared/
-│   └── core/
-└── test/
-    ├── widget/
-    ├── integration/
-    └── unit/
+tests/
+├── contract/
+├── integration/
+└── unit/
+
+# Option 2: Web application (when "frontend" + "backend" detected)
+backend/
+├── src/
+│   ├── models/
+│   ├── services/
+│   └── api/
+└── tests/
+
+frontend/
+├── src/
+│   ├── components/
+│   ├── pages/
+│   └── services/
+└── tests/
+
+# Option 3: Mobile + API (when "iOS/Android" detected)
+api/
+└── [same as backend above]
+
+ios/ or android/
+└── [platform-specific structure]
 ```
 
-**Structure Decision**: Option 3 (Mobile + API) - Flutter mobile app with separate NestJS API backend
+**Structure Decision**: Option 3 (Mobile + API) - life-hacking-api/ (NestJS backend, existing) + life-hacking-mobile/ (Flutter iOS app, new)
 
 ## Phase 0: Outline & Research
 1. **Extract unknowns from Technical Context** above:
-   - External API integration patterns (GitHub, Linear, Notion, Google Calendar, Apple Health)
-   - AI recommendation architecture (OpenAI/Gemini + RAG implementation)
-   - Flutter offline-first architecture with WebSocket synchronization
-   - Real-time push notification system design
-   - Subscription/payment integration patterns
+   - For each NEEDS CLARIFICATION → research task
+   - For each dependency → best practices task
+   - For each integration → patterns task
 
 2. **Generate and dispatch research agents**:
    ```
-   Task: "Research external API integration patterns for GitHub, Linear, Notion APIs"
-   Task: "Find best practices for OpenAI/Gemini RAG implementation in NestJS"
-   Task: "Research Flutter offline-first architecture with WebSocket sync"
-   Task: "Find push notification patterns for iOS/Android with NestJS backend"
-   Task: "Research subscription management patterns for mobile apps"
+   For each unknown in Technical Context:
+     Task: "Research {unknown} for {feature context}"
+   For each technology choice:
+     Task: "Find best practices for {tech} in {domain}"
    ```
 
 3. **Consolidate findings** in `research.md` using format:
@@ -177,75 +146,62 @@ life-hacking-mobile/
    - Rationale: [why chosen]
    - Alternatives considered: [what else evaluated]
 
-**Output**: research.md with all technology decisions documented
+**Output**: research.md with all NEEDS CLARIFICATION resolved
 
 ## Phase 1: Design & Contracts
 *Prerequisites: research.md complete*
 
 1. **Extract entities from feature spec** → `data-model.md`:
-   - User Profile: preferences, subscription, onboarding progress
-   - Energy Level: daily assessment with mood context and timestamp
-   - Routine Recommendation: AI-generated suggestions with difficulty/duration
-   - Activity: individual tasks within routines with completion tracking
-   - External App Data: synchronized productivity and health metrics
-   - Progress Path: visual journey representation with milestones
-   - Insight Report: weekly/monthly analytics and growth recommendations
-   - Burnout Risk Assessment: calculated score based on patterns
-   - User Settings: personalization preferences and privacy choices
+   - Entity name, fields, relationships
+   - Validation rules from requirements
+   - State transitions if applicable
 
 2. **Generate API contracts** from functional requirements:
-   - Authentication endpoints (login, register, refresh)
-   - Energy level tracking (POST /energy-levels, GET /energy-levels/streaks)
-   - Routine recommendation (POST /recommendations/generate, GET /recommendations/history)
-   - External app sync (POST /integrations/github, POST /integrations/calendar)
-   - Progress visualization (GET /progress/path, GET /progress/insights)
-   - User management (GET/PUT /users/profile, POST /users/subscribe)
-   - Output OpenAPI 3.0 schema to `/contracts/`
+   - For each user action → endpoint
+   - Use standard REST/GraphQL patterns
+   - Output OpenAPI/GraphQL schema to `/contracts/`
 
 3. **Generate contract tests** from contracts:
-   - One test file per endpoint group
-   - Assert request/response schemas match OpenAPI spec
-   - Tests must fail initially (no implementation yet)
+   - One test file per endpoint
+   - Assert request/response schemas
+   - Tests must fail (no implementation yet)
 
 4. **Extract test scenarios** from user stories:
-   - Morning energy input → AI recommendation flow
-   - Burnout detection → recovery routine suggestion
-   - GitHub activity → eye rest recommendation
-   - Completion tracking → progress path update
-   - Calendar density → routine intensity adjustment
+   - Each story → integration test scenario
+   - Quickstart test = story validation steps
 
 5. **Update agent file incrementally** (O(1) operation):
-   - Run `/scripts/update-agent-context.sh claude` for Claude Code
-   - Add: NestJS domains, Flutter features, AI integration, external APIs
+   - Run `/scripts/update-agent-context.sh [claude|gemini|copilot]` for your AI assistant
+   - If exists: Add only NEW tech from current plan
    - Preserve manual additions between markers
-   - Update recent changes (current plan)
+   - Update recent changes (keep last 3)
    - Keep under 150 lines for token efficiency
+   - Output to repository root
 
-**Output**: data-model.md, /contracts/*, failing contract tests, quickstart.md, CLAUDE.md
+**Output**: data-model.md, /contracts/*, failing tests, quickstart.md, agent-specific file
 
 ## Phase 2: Task Planning Approach
 *This section describes what the /tasks command will do - DO NOT execute during /plan*
 
-**Task Generation Strategy**:
+**Task Generation Strategy - Flutter Focus**:
 - Load `/templates/tasks-template.md` as base
-- Generate tasks from Phase 1 design docs (contracts, data model, quickstart)
-- Each API endpoint → contract test task [P]
-- Each entity → Prisma model + Flutter model creation task [P] 
-- Each user story → integration test task
-- External API integration tasks (GitHub, Calendar, etc.)
-- AI recommendation engine implementation tasks
-- Flutter UI component tasks for each feature
-- WebSocket real-time sync implementation tasks
-- Offline functionality and local storage tasks
-- Push notification setup and handling tasks
+- Flutter project setup and dependencies (flutter_riverpod, shadcn_flutter, dio)
+- Generate Flutter DTO classes from existing backend contracts
+- Create Repository interfaces and implementations for API communication
+- Build UseCase classes for business logic (Clean Architecture)
+- Create Riverpod providers with code generation
+- Implement UI screens with shadcn_flutter components
+- Add offline capability with SQLite and sync logic
 
-**Ordering Strategy**:
-- TDD order: Contract tests → Integration tests → E2E tests → Unit tests → Implementation
-- Dependency order: Models → Services → Controllers → UI components
-- External integrations parallel with core features [P]
-- AI engine can be developed parallel to basic CRUD [P]
+**Ordering Strategy - Mobile Development**:
+- TDD order: Tests before implementation (Flutter Test framework)
+- Setup: Project creation → Dependencies → Code generation setup
+- Architecture: Core utilities → Feature modules → Integration
+- Features: Domain layer → Data layer → Presentation layer
+- Integration: API communication → WebSocket → Offline sync
+- Mark [P] for parallel execution (independent feature modules)
 
-**Estimated Output**: 35-40 numbered, ordered tasks in tasks.md covering backend domains, mobile features, AI integration, external APIs, and testing
+**Estimated Output**: 35-40 numbered, ordered tasks focusing on Flutter mobile app setup and feature implementation
 
 **IMPORTANT**: This phase is executed by the /tasks command, NOT by /plan
 
@@ -259,28 +215,28 @@ life-hacking-mobile/
 ## Complexity Tracking
 *Fill ONLY if Constitution Check has violations that must be justified*
 
-No constitutional violations identified. Design follows established patterns:
-- 2 projects (within max 3)
-- NestJS Clean Architecture + Flutter standard practices
-- TDD methodology strictly enforced
-- Real dependencies for integration testing
+| Violation | Why Needed | Simpler Alternative Rejected Because |
+|-----------|------------|-------------------------------------|
+| [e.g., 4th project] | [current need] | [why 3 projects insufficient] |
+| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |
+
 
 ## Progress Tracking
 *This checklist is updated during execution flow*
 
 **Phase Status**:
-- [x] Phase 0: Research complete (/plan command)
-- [x] Phase 1: Design complete (/plan command)
-- [x] Phase 2: Task planning complete (/plan command - describe approach only)
+- [x] Phase 0: Research complete (/plan command) - Enhanced with Flutter mobile architecture
+- [x] Phase 1: Design complete (/plan command) - Existing data model and contracts remain valid
+- [x] Phase 2: Task planning complete (/plan command - describe Flutter-focused approach)
 - [ ] Phase 3: Tasks generated (/tasks command)
 - [ ] Phase 4: Implementation complete
 - [ ] Phase 5: Validation passed
 
 **Gate Status**:
-- [x] Initial Constitution Check: PASS
-- [x] Post-Design Constitution Check: PASS
-- [x] All NEEDS CLARIFICATION resolved
-- [x] Complexity deviations documented
+- [x] Initial Constitution Check: PASS - 2 projects justified, repository pattern needed
+- [x] Post-Design Constitution Check: PASS - Flutter architecture follows clean principles
+- [x] All NEEDS CLARIFICATION resolved - Flutter tech stack decided
+- [x] Complexity deviations documented - Repository pattern and DTOs justified
 
 ---
 *Based on Constitution v2.1.1 - See `/memory/constitution.md`*

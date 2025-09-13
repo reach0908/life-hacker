@@ -160,7 +160,61 @@
 - Image and asset optimization with CDN delivery
 - Lazy loading for non-critical data and features
 
+## Flutter Mobile Development Architecture
+
+**Decision**: Clean Architecture + Riverpod with shadcn_flutter design system
+**Rationale**:
+- Riverpod provides compile-time safety and modern state management (2025 best practice)
+- Clean Architecture enables testable, maintainable code with clear layer separation
+- shadcn_flutter offers 70+ customizable components with built-in theming
+- Feature-first folder structure supports independent module development
+- Code generation with freezed/json_serializable reduces boilerplate and errors
+
+**Alternatives considered**:
+- BLoC pattern: Rejected - unnecessary complexity for this use case
+- Provider: Rejected - Riverpod is its modern evolution with better safety
+- Material 3 only: Rejected - less distinctive, generic design system
+- GetX: Rejected - community concerns about maintenance and type safety
+
+**Implementation approach**:
+- Feature-based folder structure: `features/{domain}/{data|domain|presentation}`
+- Riverpod generators for type-safe dependency injection
+- Dio HTTP client with interceptors for API communication
+- SQLite local storage with optimistic updates for offline capability
+- WebSocket integration for real-time synchronization
+
+**Flutter Project Setup Strategy**:
+```
+life-hacking-mobile/
+├── lib/
+│   ├── core/                    # Shared utilities, API client
+│   ├── common/                  # App-wide theme, widgets
+│   └── features/                # Feature modules
+│       └── {feature}/
+│           ├── data/            # DTOs, DataSources, Repositories
+│           ├── domain/          # Entities, UseCases, Interfaces
+│           └── presentation/    # Screens, Widgets, Providers
+└── test/
+    ├── unit/                    # UseCase and business logic tests
+    ├── widget/                  # UI component tests
+    └── integration/             # Full workflow tests
+```
+
+**Key Dependencies Selected**:
+- `flutter_riverpod` + `riverpod_annotation`: Modern state management with code generation
+- `shadcn_flutter`: Comprehensive design system with 70+ components
+- `dio`: Feature-rich HTTP client with interceptors and error handling
+- `freezed` + `json_serializable`: Immutable data classes and JSON serialization
+- `build_runner`: Code generation automation
+
+**Mobile-Backend Integration Pattern**:
+- Repository pattern with Abstract interfaces in Domain layer
+- DataSources handle API communication via Dio
+- DTO to Entity mapping maintains clean architecture boundaries
+- WebSocket for real-time updates (energy input → recommendation refresh)
+- Optimistic updates for immediate UI feedback during offline periods
+
 ---
 
-**Research Status**: ✅ Complete - All technical unknowns resolved  
-**Next Phase**: Design & Contracts (data-model.md, contracts/, quickstart.md)
+**Research Status**: ✅ Complete - All technical unknowns resolved including Flutter mobile setup
+**Next Phase**: Update implementation plan with Flutter-focused approach

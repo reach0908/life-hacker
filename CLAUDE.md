@@ -141,12 +141,14 @@ The system enforces strict development principles via `/memory/constitution.md`:
 
 ### Technology Stack
 - **Backend**: NestJS (TypeScript) with Clean Architecture + DDD + Hexagonal Architecture
-- **Frontend**: Flutter 3.x (Dart) with Riverpod state management
-- **Database**: PostgreSQL + Prisma ORM
+- **Frontend**: Flutter 3.x (Dart) with Riverpod state management + shadcn_flutter design system
+- **Database**: PostgreSQL + Prisma ORM (backend), SQLite (mobile offline storage)
 - **AI Integration**: OpenAI GPT-4 + RAG with LangChain
 - **Real-time**: WebSocket (Socket.IO)
+- **HTTP Client**: Dio with interceptors for API communication
+- **Code Generation**: freezed, json_serializable, riverpod_generator
 - **External APIs**: GitHub, Linear, Notion, Google Calendar, Apple Health
-- **Testing**: Jest (backend), Flutter Test (mobile)
+- **Testing**: Jest (backend), Flutter Test + Widget Test + Integration Test (mobile)
 
 ### Domain Architecture (NestJS)
 ```
@@ -160,18 +162,28 @@ life-hacking-api/src/domains/
 
 ### Mobile Architecture (Flutter)
 ```
-life-hacking-mobile/lib/features/
-├── energy_tracking/       # Daily energy input UI
-├── routine_recommendations/ # AI-generated routine display
-├── progress_visualization/ # Progress path and insights
-├── external_integrations/ # External app connection UI
-└── user_management/       # Profile and subscription management
+life-hacking-mobile/lib/
+├── core/                  # API client, utilities, constants
+├── common/                # App theme, shared widgets
+└── features/              # Feature modules (Clean Architecture)
+    └── {feature}/
+        ├── data/          # DTOs, DataSources, Repository implementations
+        ├── domain/        # Entities, UseCases, Repository interfaces
+        └── presentation/  # Screens, Widgets, Riverpod Providers
+
+Features:
+├── energy_tracking/       # Daily energy input UI with streak tracking
+├── routine_recommendations/ # AI-generated routine display and completion
+├── progress_visualization/ # Productivity path and milestone insights
+├── external_integrations/ # GitHub, Calendar, Health API connections
+└── user_management/       # Authentication, profile, subscription UI
 ```
 
 ### Recent Changes
-- 001-prd-lifehacker-energy: Added TypeScript + NestJS backend with Flutter mobile client
-- Phase 0-1 complete: Research, data model, API contracts, integration scenarios defined
-- 9 core entities designed with full relationships and validation rules
+- 001-prd-lifehacker-energy: Enhanced Flutter mobile architecture with Riverpod + shadcn_flutter
+- Research updated: Added Flutter best practices, Clean Architecture, and offline-first design
+- Planning complete: Flutter project structure, dependencies, and implementation approach defined
+- Phase 0-1 complete: Backend data model exists, mobile architecture planned
 
 ## Important Notes
 

@@ -26,7 +26,11 @@
       "Bash(NODE_ENV=development npx jest test/contract/auth.contract.spec.ts --rootDir=.)",
       "mcp__linear-server__get_issue",
       "mcp__serena__find_symbol",
-      "mcp__serena__search_for_pattern"
+      "mcp__serena__search_for_pattern",
+      "Bash(scripts/setup-plan.sh:*)",
+      "WebSearch",
+      "Bash(scripts/update-agent-context.sh:*)",
+      "mcp__serena__get_current_config"
     ],
     "deny": [],
     "ask": []
