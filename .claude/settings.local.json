@@ -8,7 +8,13 @@
       "mcp__context7__resolve-library-id",
       "mcp__context7__get-library-docs",
       "mcp__gemini-cli__ask-gemini",
-      "Bash(npm run prisma:migrate:*)"
+      "Bash(npm run prisma:migrate:*)",
+      "Bash(npm run lint)",
+      "Bash(npm run format:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run test:*)",
+      "Bash(npm install class-validator class-transformer)",
+      "Bash(npm install:*)"
     ],
     "deny": [],
     "ask": []
