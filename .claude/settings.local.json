@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(scripts/check-task-prerequisites.sh:*)",
+      "Bash(chmod:*)",
+      "mcp__sequential-thinking__sequentialthinking",
+      "mcp__serena__list_dir",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__get-library-docs",
+      "mcp__gemini-cli__ask-gemini",
+      "Bash(npm run prisma:migrate:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
