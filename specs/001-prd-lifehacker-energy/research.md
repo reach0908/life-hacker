@@ -1,8 +1,8 @@
-# Phase 0: Technology Research & Decisions
+# Phase 0: React Native Technology Research
 
-**Feature**: LifeHacker - Energy-First Productivity App  
-**Date**: 2025-09-12  
-**Context**: Mobile app with NestJS API backend requiring external integrations and AI recommendations
+**Feature**: LifeHacker - Energy-First Productivity App
+**Date**: 2025-09-14
+**Context**: **NEW REACT NATIVE APPLICATION** development for iOS-first mobile app with future web expansion
 
 ## External API Integration Patterns
 
@@ -160,61 +160,116 @@
 - Image and asset optimization with CDN delivery
 - Lazy loading for non-critical data and features
 
-## Flutter Mobile Development Architecture
+## React Native Application Architecture
 
-**Decision**: Clean Architecture + Riverpod with shadcn_flutter design system
+**Decision**: Container/Presentational pattern with Zustand + TanStack Query
 **Rationale**:
-- Riverpod provides compile-time safety and modern state management (2025 best practice)
-- Clean Architecture enables testable, maintainable code with clear layer separation
-- shadcn_flutter offers 70+ customizable components with built-in theming
-- Feature-first folder structure supports independent module development
-- Code generation with freezed/json_serializable reduces boilerplate and errors
+- Better web expansion with React Native Web (Flutter Web has limitations)
+- Unified React ecosystem enables shared components and tooling
+- Container/Presentational pattern provides superior testability and maintainability
+- Zustand offers minimal boilerplate vs Redux while maintaining type safety
+- TanStack Query handles server state with built-in caching and offline support
+- React Native Reusables brings shadcn/ui design consistency for cross-platform
 
 **Alternatives considered**:
-- BLoC pattern: Rejected - unnecessary complexity for this use case
-- Provider: Rejected - Riverpod is its modern evolution with better safety
-- Material 3 only: Rejected - less distinctive, generic design system
-- GetX: Rejected - community concerns about maintenance and type safety
+- Flutter: Rejected - limited web expansion, separate Dart ecosystem
+- Redux Toolkit: Rejected - unnecessary complexity for app size
+- Context + useReducer: Rejected - poor performance for frequent updates
+- React Native Elements: Rejected - outdated design system
 
-**Implementation approach**:
-- Feature-based folder structure: `features/{domain}/{data|domain|presentation}`
-- Riverpod generators for type-safe dependency injection
-- Dio HTTP client with interceptors for API communication
-- SQLite local storage with optimistic updates for offline capability
-- WebSocket integration for real-time synchronization
+**Architecture Benefits**:
+- **Performance**: New Architecture (Fabric + TurboModules) + Hermes engine
+- **Developer Experience**: Superior debugging with React DevTools, Flipper
+- **Code Reuse**: Shared components for future web expansion
+- **Team Expertise**: Leverage existing React/TypeScript knowledge
+- **Library Ecosystem**: Richer third-party ecosystem for integrations
 
-**Flutter Project Setup Strategy**:
+**React Native Project Architecture**:
 ```
 life-hacking-mobile/
-├── lib/
-│   ├── core/                    # Shared utilities, API client
-│   ├── common/                  # App-wide theme, widgets
-│   └── features/                # Feature modules
-│       └── {feature}/
-│           ├── data/            # DTOs, DataSources, Repositories
-│           ├── domain/          # Entities, UseCases, Interfaces
-│           └── presentation/    # Screens, Widgets, Providers
-└── test/
-    ├── unit/                    # UseCase and business logic tests
-    ├── widget/                  # UI component tests
-    └── integration/             # Full workflow tests
+├── src/
+│   ├── api/                     # TanStack Query setup, API hooks
+│   ├── components/              # Atomic design system
+│   │   ├── atoms/               # Button, Input, Text, Badge
+│   │   ├── molecules/           # LabeledInput, EnergySlider
+│   │   ├── organisms/           # EnergyForm, RoutineCard
+│   │   └── templates/           # Screen layouts
+│   ├── features/                # Feature modules
+│   │   └── {feature}/
+│   │       ├── containers/      # Business logic, state management
+│   │       ├── components/      # Pure UI components
+│   │       ├── api/             # Feature-specific API hooks
+│   │       └── types/           # TypeScript interfaces
+│   ├── state/                   # Zustand stores, TanStack Query client
+│   ├── navigation/              # React Navigation setup
+│   └── utils/                   # Shared utilities
+└── tests/
+    ├── components/              # Presentational component tests
+    ├── containers/              # Container logic tests
+    └── integration/             # Feature workflow tests
 ```
 
-**Key Dependencies Selected**:
-- `flutter_riverpod` + `riverpod_annotation`: Modern state management with code generation
-- `shadcn_flutter`: Comprehensive design system with 70+ components
-- `dio`: Feature-rich HTTP client with interceptors and error handling
-- `freezed` + `json_serializable`: Immutable data classes and JSON serialization
-- `build_runner`: Code generation automation
+**Key Dependencies Migration**:
+- `zustand`: Client state (theme, UI preferences) - replaces Riverpod
+- `@tanstack/react-query`: Server state, caching - replaces manual data layer
+- `react-native-reusables`: shadcn/ui design system - replaces shadcn_flutter
+- `nativewind`: Tailwind CSS styling - replaces Flutter theme system
+- `react-hook-form` + `zod`: Form management - replaces Flutter form widgets
+- `react-navigation`: Navigation - replaces Flutter Navigator
+- `react-native-mmkv`: High-performance storage - replaces SQLite for simple data
 
-**Mobile-Backend Integration Pattern**:
-- Repository pattern with Abstract interfaces in Domain layer
-- DataSources handle API communication via Dio
-- DTO to Entity mapping maintains clean architecture boundaries
-- WebSocket for real-time updates (energy input → recommendation refresh)
-- Optimistic updates for immediate UI feedback during offline periods
+**Container/Presentational Implementation**:
+```typescript
+// Container: Business logic and state
+const EnergyInputContainer = () => {
+  const { mutate: updateEnergy } = useUpdateEnergyLevel()
+  const { data: recommendations } = useEnergyRecommendations()
+
+  const handleEnergyUpdate = (level: number) => {
+    updateEnergy(level, {
+      onSuccess: () => {
+        // Handle success logic
+      }
+    })
+  }
+
+  return (
+    <EnergyInputForm
+      onEnergyUpdate={handleEnergyUpdate}
+      recommendations={recommendations}
+      isLoading={isLoading}
+    />
+  )
+}
+
+// Presentational: Pure UI component
+interface EnergyInputFormProps {
+  onEnergyUpdate: (level: number) => void
+  recommendations?: Recommendation[]
+  isLoading: boolean
+}
+
+const EnergyInputForm: React.FC<EnergyInputFormProps> = ({
+  onEnergyUpdate,
+  recommendations,
+  isLoading
+}) => {
+  // Pure UI logic only
+  return (
+    <View>
+      {/* UI components */}
+    </View>
+  )
+}
+```
+
+**State Management Strategy**:
+- **Zustand**: Theme, language, onboarding status, offline settings
+- **TanStack Query**: User profile, energy history, AI recommendations, external data
+- **AsyncStorage**: Data persistence for Zustand stores
+- **MMKV**: High-performance cache for TanStack Query
 
 ---
 
-**Research Status**: ✅ Complete - All technical unknowns resolved including Flutter mobile setup
-**Next Phase**: Update implementation plan with Flutter-focused approach
+**Research Status**: ✅ Complete - React Native development research finalized
+**Next Phase**: Update data models and contracts for React Native architecture

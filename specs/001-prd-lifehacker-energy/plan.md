@@ -1,7 +1,7 @@
 # Implementation Plan: LifeHacker Energy-First Productivity App
 
-**Branch**: `001-prd-lifehacker-energy` | **Date**: 2025-09-13 | **Spec**: [spec.md](./spec.md)
-**Input**: Feature specification from `/specs/001-prd-lifehacker-energy/spec.md`
+**Branch**: `001-prd-lifehacker-energy` | **Date**: 2025-09-14 | **Spec**: [spec.md](./spec.md)
+**Input**: Feature specification from `/Users/jinhokim/dev/life-hacker/specs/001-prd-lifehacker-energy/spec.md`
 
 ## Execution Flow (/plan command scope)
 ```
@@ -29,51 +29,56 @@
 - Phase 3-4: Implementation execution (manual or via tools)
 
 ## Summary
-Energy-first productivity app for tech workers that combines daily energy level input, AI-powered routine recommendations, and adaptive difficulty scaling to prevent burnout while maintaining high productivity. Backend uses NestJS with Clean Architecture (already partially implemented), frontend will be Flutter iOS app with shadcn_flutter design system and Riverpod state management.
+Energy-first productivity app that adapts daily routines based on user energy levels and external data integrations. **NEW REACT NATIVE APPLICATION** built with Container/Presentational architecture, Zustand + TanStack Query state management, and React Native Reusables design system for iOS-first deployment with future web expansion capability.
 
 ## Technical Context
-**Language/Version**: Backend: TypeScript/NestJS (existing), Frontend: Dart/Flutter 3.x (new setup)
-**Primary Dependencies**: Backend: NestJS, Prisma ORM, PostgreSQL (existing), Frontend: flutter_riverpod, shadcn_flutter, dio (HTTP client)
-**Storage**: PostgreSQL with Prisma ORM (backend), local storage/secure storage (mobile)
-**Testing**: Backend: Jest (existing), Frontend: Flutter Test (unit), Widget Test, Integration Test
-**Target Platform**: iOS 15+ (primary), NestJS API server (existing)
-**Project Type**: mobile - Mobile + API (Option 3 from structure)
-**Performance Goals**: <100ms app response time, 60fps UI, <50MB memory usage on mobile
-**Constraints**: Offline-capable basic recommendations, real-time sync when online, battery-efficient
-**Scale/Scope**: 10k initial users, ~15 core screens, 5 main feature domains (energy, routines, progress, integrations, user)
+**Language/Version**: TypeScript 5.0+ with React Native 0.75+ (Hermes Engine enabled)
+**Primary Dependencies**: React Native, Zustand, TanStack Query, React Native Reusables, NativeWind, React Navigation
+**Storage**: AsyncStorage (client persistence), MMKV (high-performance storage), PostgreSQL + Prisma (backend API)
+**Testing**: Jest + React Native Testing Library (unit/integration), Detox (E2E), Contract tests
+**Target Platform**: iOS 15+ (primary), Android 8+ (secondary), React Native Web (future expansion)
+**Project Type**: mobile - React Native app with NestJS API backend
+**Performance Goals**: 60fps UI, <100ms API response, <3s app launch time, New Architecture (Fabric + TurboModules)
+**Constraints**: <150MB memory usage, offline-capable with rule-based fallbacks, privacy-first data handling
+**Scale/Scope**: 10k+ users, 20-30 screens, 5 external integrations (GitHub, Linear, Notion, Calendar, Health)
 
 ## Constitution Check
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
 **Simplicity**:
-- Projects: 2 (life-hacking-api NestJS backend existing, life-hacking-mobile Flutter app new)
-- Using framework directly? Yes - Riverpod providers, shadcn_flutter components, Dio HTTP client
-- Single data model? No - DTOs needed for API serialization, Entities for business logic
-- Avoiding patterns? Repository pattern justified for API abstraction and offline capability
+- Projects: 2 (life-hacking-mobile + life-hacking-api) - within constitutional limit
+- Using framework directly? YES (React Native + NestJS, no unnecessary abstractions)
+- Single data model? YES (shared TypeScript types between mobile and API)
+- Avoiding patterns? YES (direct React Native patterns, no over-engineering)
 
 **Architecture**:
-- EVERY feature as library? Mobile: Features as self-contained modules with clear boundaries
-- Libraries listed: energy-tracking (input/streaks), routine-ai (recommendations), progress-visualization (journey), external-integrations (API sync), user-management (auth/profile)
-- CLI per library: Not applicable for mobile app, backend has existing CLI structure
-- Library docs: Dart documentation with example usage per feature module
+- EVERY feature as library? YES (feature modules in /src/features/, each self-contained)
+- Libraries listed:
+  - energy-tracking: energy input and streak tracking
+  - routine-ai: AI recommendations engine
+  - progress-visualization: productivity insights
+  - external-integrations: GitHub/Calendar/Health sync
+  - user-management: auth and subscriptions
+- CLI per library: NO (mobile app, but each feature module exports testable functions)
+- Library docs: llms.txt format planned? YES (for AI context)
 
 **Testing (NON-NEGOTIABLE)**:
-- RED-GREEN-Refactor cycle enforced? Yes - Flutter tests written first for UseCase logic
-- Git commits show tests before implementation? Yes - test files committed before implementation
-- Order: Contract→Integration→E2E→Unit strictly followed? Yes - API contracts, user workflows, component widgets, business logic
-- Real dependencies used? Yes - actual HTTP calls, real SQLite database for integration tests
-- Integration tests for: Flutter-backend API integration, WebSocket real-time updates, offline sync
+- RED-GREEN-Refactor cycle enforced? YES (test-first development mandatory)
+- Git commits show tests before implementation? YES (enforced by workflow)
+- Order: Contract→Integration→E2E→Unit strictly followed? YES
+- Real dependencies used? YES (actual API calls, real storage, no mocks for integration tests)
+- Integration tests for: feature modules, API contracts, external integrations
 - FORBIDDEN: Implementation before test, skipping RED phase
 
 **Observability**:
-- Structured logging included? Yes - Flutter logging to backend via API
-- Frontend logs → backend? Yes - unified error stream for debugging
-- Error context sufficient? Yes - user context, device info, error stack traces
+- Structured logging included? YES (unified logging to backend API)
+- Frontend logs → backend? YES (structured error reporting and analytics)
+- Error context sufficient? YES (error boundaries, crash reporting)
 
 **Versioning**:
-- Version number assigned? Mobile: 1.0.1 (MAJOR.MINOR.BUILD), API: existing versioning
-- BUILD increments on every change? Yes - automated via CI/CD
-- Breaking changes handled? Yes - API versioning, mobile app migration handling
+- Version number assigned? YES (MAJOR.MINOR.BUILD format)
+- BUILD increments on every change? YES (automated versioning)
+- Breaking changes handled? YES (migration strategies, backward compatibility)
 
 ## Project Structure
 
@@ -117,15 +122,31 @@ frontend/
 │   └── services/
 └── tests/
 
-# Option 3: Mobile + API (when "iOS/Android" detected)
-api/
-└── [same as backend above]
+# Option 3: Mobile + API (SELECTED - React Native architecture)
+life-hacking-api/                # NestJS backend (existing submodule)
+└── [existing NestJS structure with Clean Architecture + DDD]
 
-ios/ or android/
-└── [platform-specific structure]
+life-hacking-mobile/             # React Native app
+├── android/                     # Android-specific files
+├── ios/                         # iOS-specific files
+├── src/
+│   ├── api/                     # TanStack Query setup and hooks
+│   ├── components/              # Atomic design system (atoms/molecules/organisms)
+│   ├── features/                # Feature modules (Container/Presentational)
+│   │   ├── energy-tracking/
+│   │   ├── routine-ai/
+│   │   ├── progress-visualization/
+│   │   ├── external-integrations/
+│   │   └── user-management/
+│   ├── hooks/                   # Global custom hooks
+│   ├── navigation/              # React Navigation setup
+│   ├── state/                   # Zustand stores and TanStack Query client
+│   ├── styles/                  # NativeWind global styles
+│   └── utils/
+└── tests/                       # Test files mirroring src structure
 ```
 
-**Structure Decision**: Option 3 (Mobile + API) - life-hacking-api/ (NestJS backend, existing) + life-hacking-mobile/ (Flutter iOS app, new)
+**Structure Decision**: Option 3 selected - Mobile + API architecture for React Native app with existing NestJS backend
 
 ## Phase 0: Outline & Research
 1. **Extract unknowns from Technical Context** above:
@@ -183,25 +204,20 @@ ios/ or android/
 ## Phase 2: Task Planning Approach
 *This section describes what the /tasks command will do - DO NOT execute during /plan*
 
-**Task Generation Strategy - Flutter Focus**:
+**Task Generation Strategy**:
 - Load `/templates/tasks-template.md` as base
-- Flutter project setup and dependencies (flutter_riverpod, shadcn_flutter, dio)
-- Generate Flutter DTO classes from existing backend contracts
-- Create Repository interfaces and implementations for API communication
-- Build UseCase classes for business logic (Clean Architecture)
-- Create Riverpod providers with code generation
-- Implement UI screens with shadcn_flutter components
-- Add offline capability with SQLite and sync logic
+- Generate tasks from Phase 1 design docs (contracts, data model, quickstart)
+- Each contract → contract test task [P]
+- Each entity → model creation task [P] 
+- Each user story → integration test task
+- Implementation tasks to make tests pass
 
-**Ordering Strategy - Mobile Development**:
-- TDD order: Tests before implementation (Flutter Test framework)
-- Setup: Project creation → Dependencies → Code generation setup
-- Architecture: Core utilities → Feature modules → Integration
-- Features: Domain layer → Data layer → Presentation layer
-- Integration: API communication → WebSocket → Offline sync
-- Mark [P] for parallel execution (independent feature modules)
+**Ordering Strategy**:
+- TDD order: Tests before implementation 
+- Dependency order: Models before services before UI
+- Mark [P] for parallel execution (independent files)
 
-**Estimated Output**: 35-40 numbered, ordered tasks focusing on Flutter mobile app setup and feature implementation
+**Estimated Output**: 25-30 numbered, ordered tasks in tasks.md
 
 **IMPORTANT**: This phase is executed by the /tasks command, NOT by /plan
 
@@ -225,18 +241,18 @@ ios/ or android/
 *This checklist is updated during execution flow*
 
 **Phase Status**:
-- [x] Phase 0: Research complete (/plan command) - Enhanced with Flutter mobile architecture
-- [x] Phase 1: Design complete (/plan command) - Existing data model and contracts remain valid
-- [x] Phase 2: Task planning complete (/plan command - describe Flutter-focused approach)
+- [x] Phase 0: Research complete (/plan command) - React Native development research finalized
+- [x] Phase 1: Design complete (/plan command) - Data models updated for React Native TypeScript
+- [x] Phase 2: Task planning complete (/plan command - describe approach only)
 - [ ] Phase 3: Tasks generated (/tasks command)
 - [ ] Phase 4: Implementation complete
 - [ ] Phase 5: Validation passed
 
 **Gate Status**:
-- [x] Initial Constitution Check: PASS - 2 projects justified, repository pattern needed
-- [x] Post-Design Constitution Check: PASS - Flutter architecture follows clean principles
-- [x] All NEEDS CLARIFICATION resolved - Flutter tech stack decided
-- [x] Complexity deviations documented - Repository pattern and DTOs justified
+- [x] Initial Constitution Check: PASS - 2 projects within limit, library architecture confirmed
+- [x] Post-Design Constitution Check: PASS - React Native patterns align with constitutional principles
+- [x] All NEEDS CLARIFICATION resolved - React Native technology decisions made
+- [x] Complexity deviations documented - None required, architecture fits constitutional constraints
 
 ---
 *Based on Constitution v2.1.1 - See `/memory/constitution.md`*

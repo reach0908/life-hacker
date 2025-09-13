@@ -1,36 +1,36 @@
-# Phase 1: Data Model Design (DDD Enhanced)
+# Phase 1: Data Model Design (React Native TypeScript)
 
-**Feature**: LifeHacker - Energy-First Productivity App  
-**Date**: 2025-09-12  
-**Context**: Domain-driven design with proper Entity/Value Object classification and Aggregate boundaries
+**Feature**: LifeHacker - Energy-First Productivity App
+**Date**: 2025-09-14
+**Context**: TypeScript interfaces and types for React Native app with shared backend integration
 
-## Bounded Context: Productivity Domain
+## React Native App Data Types
 
-### Value Objects (Immutable, Identity by Value)
+### Core Energy Types
 
-#### EnergyScore
-**Purpose**: Represents daily energy assessment with validation
+#### EnergyLevel
+**Purpose**: Daily energy assessment data structure
 ```typescript
-class EnergyScore {
-  constructor(
-    readonly level: number, // 1-5
-    readonly context?: string,
-    readonly timestamp: Date = new Date()
-  ) {
-    if (level < 1 || level > 5) {
-      throw new DomainError('Energy level must be between 1 and 5');
-    }
-    if (this.timestamp > new Date()) {
-      throw new DomainError('Energy timestamp cannot be in the future');
-    }
-  }
-
-  isLowEnergy(): boolean { return this.level <= 2; }
-  isHighEnergy(): boolean { return this.level >= 4; }
-  adaptIntensity(baseIntensity: number): number {
-    return baseIntensity * (this.level / 5) * 0.6 + baseIntensity * 0.4;
-  }
+interface EnergyLevel {
+  readonly id: string;
+  readonly level: 1 | 2 | 3 | 4 | 5;
+  readonly context?: string;
+  readonly timestamp: string; // ISO string for React Native compatibility
+  readonly userId: string;
 }
+
+// Utility functions for energy level
+export const EnergyUtils = {
+  isLowEnergy: (level: EnergyLevel['level']): boolean => level <= 2,
+  isHighEnergy: (level: EnergyLevel['level']): boolean => level >= 4,
+  adaptIntensity: (baseIntensity: number, energyLevel: EnergyLevel['level']): number => {
+    return baseIntensity * (energyLevel / 5) * 0.6 + baseIntensity * 0.4;
+  },
+  getEnergyEmoji: (level: EnergyLevel['level']): string => {
+    const emojis = { 1: '😴', 2: '😐', 3: '😊', 4: '🔥', 5: '🤒' };
+    return emojis[level];
+  }
+} as const;
 ```
 
 #### Duration
@@ -581,5 +581,94 @@ ExternalIntegration Aggregate (Integration Context)
 
 ---
 
-**Data Model Status**: ✅ Enhanced with proper DDD patterns  
-**Next**: Update plan.md with complete Ports & Adapters architecture
+## React Native State Management Types
+
+### Zustand Store Types
+```typescript
+// Client state (Zustand)
+interface AppState {
+  theme: 'light' | 'dark';
+  language: 'en' | 'ko' | 'es' | 'fr';
+  onboardingCompleted: boolean;
+  notificationsEnabled: boolean;
+  offlineSettings: {
+    enableOfflineMode: boolean;
+    lastSyncTime: string;
+  };
+}
+
+// Actions for Zustand store
+interface AppActions {
+  setTheme: (theme: AppState['theme']) => void;
+  setLanguage: (language: AppState['language']) => void;
+  completeOnboarding: () => void;
+  toggleNotifications: () => void;
+  updateOfflineSettings: (settings: Partial<AppState['offlineSettings']>) => void;
+}
+
+export type AppStore = AppState & AppActions;
+```
+
+### TanStack Query Key Factory
+```typescript
+// Query key factory for TanStack Query
+export const queryKeys = {
+  users: {
+    profile: (userId: string) => ['users', 'profile', userId] as const,
+    settings: (userId: string) => ['users', 'settings', userId] as const,
+  },
+  energy: {
+    levels: (userId: string, dateRange?: DateRange) => ['energy', 'levels', userId, dateRange] as const,
+    current: (userId: string) => ['energy', 'current', userId] as const,
+    history: (userId: string, days: number) => ['energy', 'history', userId, days] as const,
+  },
+  routines: {
+    recommendations: (userId: string, energyLevelId: string) =>
+      ['routines', 'recommendations', userId, energyLevelId] as const,
+    completed: (userId: string) => ['routines', 'completed', userId] as const,
+  },
+  progress: {
+    journey: (userId: string) => ['progress', 'journey', userId] as const,
+    insights: (userId: string, period: string) => ['progress', 'insights', userId, period] as const,
+  },
+  external: {
+    github: (userId: string) => ['external', 'github', userId] as const,
+    calendar: (userId: string, date: string) => ['external', 'calendar', userId, date] as const,
+    health: (userId: string) => ['external', 'health', userId] as const,
+  }
+} as const;
+```
+
+### React Native Component Props Types
+```typescript
+// Container component props (business logic)
+interface EnergyInputContainerProps {
+  userId: string;
+  onEnergySubmit?: (energy: EnergyLevel) => void;
+  onNavigateToRecommendations?: (energyId: string) => void;
+}
+
+// Presentational component props (UI only)
+interface EnergyInputFormProps {
+  currentEnergyLevel?: EnergyLevel['level'];
+  isSubmitting: boolean;
+  error?: string;
+  onEnergySelect: (level: EnergyLevel['level']) => void;
+  onSubmit: () => void;
+  onContextChange?: (context: string) => void;
+}
+
+// Routine card component props
+interface RoutineCardProps {
+  routine: RoutineRecommendation;
+  onAccept: (routineId: string) => void;
+  onSkip: (routineId: string) => void;
+  onViewDetails: (routineId: string) => void;
+  isLoading?: boolean;
+}
+```
+
+---
+
+**Data Model Status**: ✅ Complete for React Native TypeScript architecture
+**Next**: Generate API contracts and update quickstart scenarios

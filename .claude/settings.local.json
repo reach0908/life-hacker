@@ -30,7 +30,10 @@
       "Bash(scripts/setup-plan.sh:*)",
       "WebSearch",
       "Bash(scripts/update-agent-context.sh:*)",
-      "mcp__serena__get_current_config"
+      "mcp__serena__get_current_config",
+      "Bash(git submodule:*)",
+      "Bash(find:*)",
+      "Bash(npm run prisma:generate:*)"
     ],
     "deny": [],
     "ask": []
