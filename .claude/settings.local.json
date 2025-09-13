@@ -33,7 +33,15 @@
       "mcp__serena__get_current_config",
       "Bash(git submodule:*)",
       "Bash(find:*)",
-      "Bash(npm run prisma:generate:*)"
+      "Bash(npm run prisma:generate:*)",
+      "Bash(node:*)",
+      "Bash(npm --version)",
+      "Bash(npx react-native:*)",
+      "Bash(react-native --version)",
+      "Bash(curl:*)",
+      "Bash(lsof:*)",
+      "Bash(npx @react-native-community/cli:*)",
+      "Bash(npx tsc:*)"
     ],
     "deny": [],
     "ask": []
