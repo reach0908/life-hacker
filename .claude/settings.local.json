@@ -46,7 +46,8 @@
       "Bash(grep:*)",
       "Bash(npm run start:dev:*)",
       "Bash(kill:*)",
-      "mcp__serena__think_about_task_adherence"
+      "mcp__serena__think_about_task_adherence",
+      "mcp__serena__find_file"
     ],
     "deny": [],
     "ask": []
