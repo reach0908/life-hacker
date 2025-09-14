@@ -41,7 +41,8 @@
       "Bash(curl:*)",
       "Bash(lsof:*)",
       "Bash(npx @react-native-community/cli:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(pod install:*)"
     ],
     "deny": [],
     "ask": []
