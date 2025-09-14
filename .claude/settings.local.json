@@ -42,7 +42,11 @@
       "Bash(lsof:*)",
       "Bash(npx @react-native-community/cli:*)",
       "Bash(npx tsc:*)",
-      "Bash(pod install:*)"
+      "Bash(pod install:*)",
+      "Bash(grep:*)",
+      "Bash(npm run start:dev:*)",
+      "Bash(kill:*)",
+      "mcp__serena__think_about_task_adherence"
     ],
     "deny": [],
     "ask": []
