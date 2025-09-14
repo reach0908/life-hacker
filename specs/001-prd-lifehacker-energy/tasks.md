@@ -113,12 +113,12 @@
 ### Phase 1.2: React Native Project Setup [Week 1]
 - [x] T007 [M] Create React Native project in `life-hacking-mobile/` with TypeScript template ✅
 - [x] T008 [M] Configure React Native New Architecture (Fabric + TurboModules) in iOS/Android configs ✅
-- [ ] T009 [P] [M] Install core dependencies: zustand, @tanstack/react-query, react-navigation
-- [ ] T010 [P] [M] Install UI dependencies: react-native-reusables, nativewind, react-native-vector-icons
-- [ ] T011 [P] [M] Install dev dependencies: @testing-library/react-native, jest, detox
-- [ ] T012 [M] Configure Metro bundler for React Native Reusables and NativeWind
+- [x] T009 [P] [M] Install core dependencies: zustand, @tanstack/react-query, react-navigation ✅
+- [x] T010 [P] [M] Install UI dependencies: react-native-reusables, nativewind, react-native-vector-icons ✅
+- [x] T011 [P] [M] Install dev dependencies: @testing-library/react-native, jest, detox ✅
+- [x] T012 [M] Configure Metro bundler for React Native Reusables and NativeWind ✅
 - [x] T013 [P] [M] Set up TypeScript strict configuration with path mapping ✅
-- [ ] T014 [P] [M] Configure NativeWind and global styles in `src/styles/global.css`
+- [x] T014 [P] [M] Configure NativeWind and global styles in `src/styles/global.css` ✅
 - [x] T015 [M] Create project structure: `src/{api,components,features,hooks,navigation,state,utils,types}` ✅
 
 ### **✅ COMPLETED - Phase 1.2: React Native Foundation Setup (T007-T015)**
@@ -188,11 +188,11 @@ src/
 - ✅ **Metro Bundler** successfully running
 
 ### Phase 1.3: Core Architecture Setup [Week 1]
-- [ ] T016 [P] [M] Set up TanStack Query client in `src/state/queryClient.ts` with offline config
-- [ ] T017 [P] [M] Create Zustand app store in `src/state/appStore.ts` with AsyncStorage persistence
-- [ ] T018 [P] [M] Set up React Navigation with TypeScript navigation types
+- [x] T016 [P] [M] Set up TanStack Query client in `src/state/queryClient.ts` with offline config ✅
+- [x] T017 [P] [M] Create Zustand app store in `src/state/appStore.ts` with AsyncStorage persistence ✅
+- [x] T018 [P] [M] Set up React Navigation with TypeScript navigation types ✅
 - [x] T019 [P] [M] Create API client in `src/api/client.ts` with auth interceptors ✅
-- [ ] T020 [M] Configure App.tsx with QueryClient, Zustand providers, and Navigation
+- [x] T020 [M] Configure App.tsx with QueryClient, Zustand providers, and Navigation ✅
 - [x] T021 [P] [M] Create atomic design components structure (atoms/molecules/organisms/templates) ✅
 - [ ] T022 [P] [M] Implement global error boundary and crash reporting
 - [ ] T023 [M] Set up deep linking configuration for OAuth callbacks
