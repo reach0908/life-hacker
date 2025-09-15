@@ -51,7 +51,9 @@
       "Bash(npx ts-node:*)",
       "Bash(dotenv:*)",
       "Bash(npm test:*)",
-      "Bash(scripts/create-new-feature.sh:*)"
+      "Bash(scripts/create-new-feature.sh:*)",
+      "Bash(./scripts/update-agent-context.sh:*)",
+      "Bash(bash:*)"
     ],
     "deny": [],
     "ask": []
