@@ -141,49 +141,52 @@ The system enforces strict development principles via `/memory/constitution.md`:
 
 ### Technology Stack
 - **Backend**: NestJS (TypeScript) with Clean Architecture + DDD + Hexagonal Architecture
-- **Frontend**: Flutter 3.x (Dart) with Riverpod state management + shadcn_flutter design system
-- **Database**: PostgreSQL + Prisma ORM (backend), SQLite (mobile offline storage)
-- **AI Integration**: OpenAI GPT-4 + RAG with LangChain
-- **Real-time**: WebSocket (Socket.IO)
-- **HTTP Client**: Dio with interceptors for API communication
-- **Code Generation**: freezed, json_serializable, riverpod_generator
-- **External APIs**: GitHub, Linear, Notion, Google Calendar, Apple Health
-- **Testing**: Jest (backend), Flutter Test + Widget Test + Integration Test (mobile)
+- **Mobile**: React Native 0.81.4 (TypeScript) with New Architecture (Fabric + TurboModules)
+- **Database**: PostgreSQL + Prisma ORM (backend), MMKV + AsyncStorage (mobile offline storage)
+- **State Management**: Zustand (client state) + TanStack Query (server state)
+- **Authentication**: Google OAuth + JWT with dual storage strategy
+- **HTTP Client**: Axios with interceptors for API communication
+- **External APIs**: GitHub, Linear, Notion, Google Calendar, Apple Health (planned)
+- **Testing**: Jest (backend), Jest + React Native Testing Library (mobile)
 
 ### Domain Architecture (NestJS)
 ```
 life-hacking-api/src/domains/
-├── energy-tracking/        # Energy level input and streak tracking
-├── routine-ai/            # AI recommendation engine with external data
-├── progress-visualization/ # Productivity path and insights  
-├── external-integrations/ # GitHub, Calendar, Health sync
-└── user-management/       # Authentication and subscription tiers
+├── auth/                   # ✅ Google OAuth + JWT authentication
+├── user/                   # ✅ User profile and preferences management
+├── energy-tracking/        # ✅ Energy level input and productivity tracking
+├── routine-recommendations/ # ✅ Rule-based recommendation system
+└── [future domains]        # Progress visualization, external integrations
 ```
 
-### Mobile Architecture (Flutter)
+### Mobile Architecture (React Native)
 ```
-life-hacking-mobile/lib/
-├── core/                  # API client, utilities, constants
-├── common/                # App theme, shared widgets
-└── features/              # Feature modules (Clean Architecture)
-    └── {feature}/
-        ├── data/          # DTOs, DataSources, Repository implementations
-        ├── domain/        # Entities, UseCases, Repository interfaces
-        └── presentation/  # Screens, Widgets, Riverpod Providers
+life-hacking-mobile/src/
+├── api/                   # API client configuration
+├── components/            # Shared UI components (atoms, molecules, organisms)
+├── config/                # App configuration and constants
+├── features/              # Feature modules (Container/Presentational pattern)
+│   ├── auth/             # ✅ Google OAuth integration
+│   ├── onboarding/       # ✅ User onboarding flow
+│   └── [planned]/        # energy-tracking, routine-recommendations
+├── navigation/            # React Navigation setup
+├── services/             # Device services (storage, etc.)
+├── state/                # Zustand stores + TanStack Query
+├── types/                # TypeScript type definitions
+└── utils/                # Utility functions and constants
 
-Features:
-├── energy_tracking/       # Daily energy input UI with streak tracking
-├── routine_recommendations/ # AI-generated routine display and completion
-├── progress_visualization/ # Productivity path and milestone insights
-├── external_integrations/ # GitHub, Calendar, Health API connections
-└── user_management/       # Authentication, profile, subscription UI
+Features Status:
+├── auth/                 # ✅ Google Sign-In + JWT management
+├── energy-tracking/      # 🔄 API types ready, UI components pending
+├── routine-recommendations/ # ❌ Backend ready, mobile UI not started
+└── progress-visualization/  # ❌ Not implemented
 ```
 
 ### Recent Changes
-- 001-prd-lifehacker-energy: Enhanced Flutter mobile architecture with Riverpod + shadcn_flutter
-- Research updated: Added Flutter best practices, Clean Architecture, and offline-first design
-- Planning complete: Flutter project structure, dependencies, and implementation approach defined
-- Phase 0-1 complete: Backend data model exists, mobile architecture planned
+- 002-specs-001-prd: Documentation update to reflect actual implementation status
+- Backend: 4 domains fully implemented with Clean Architecture + DDD + CQRS patterns
+- Mobile: React Native foundation with auth system complete, energy tracking API integration ready
+- Technology correction: React Native (not Flutter) is the actual mobile implementation
 
 ## Important Notes
 

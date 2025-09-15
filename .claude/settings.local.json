@@ -47,7 +47,11 @@
       "Bash(npm run start:dev:*)",
       "Bash(kill:*)",
       "mcp__serena__think_about_task_adherence",
-      "mcp__serena__find_file"
+      "mcp__serena__find_file",
+      "Bash(npx ts-node:*)",
+      "Bash(dotenv:*)",
+      "Bash(npm test:*)",
+      "Bash(scripts/create-new-feature.sh:*)"
     ],
     "deny": [],
     "ask": []
