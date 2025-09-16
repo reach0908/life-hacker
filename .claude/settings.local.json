@@ -53,7 +53,8 @@
       "Bash(npm test:*)",
       "Bash(scripts/create-new-feature.sh:*)",
       "Bash(./scripts/update-agent-context.sh:*)",
-      "Bash(bash:*)"
+      "Bash(bash:*)",
+      "Bash(npm start)"
     ],
     "deny": [],
     "ask": []
